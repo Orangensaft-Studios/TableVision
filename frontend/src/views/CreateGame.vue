@@ -4,11 +4,14 @@ import { useGameStore } from '@/stores/game';
 import { ref } from 'vue';
 
 const game = useGameStore();
+const teams = ref([]);
 
+function updateTeam(usernames, teamName, teamID) {
+    teams.value[teamID] = { username: usernames, team: teamName }
+}
 
-
-function log() {
-    console.log(game.teams);
+function start() {
+    game.startGame(teams.value);
 }
 </script>
 
@@ -17,11 +20,11 @@ function log() {
         <div class="flex flex-col items-center mt-20">
             <h1 class="font-bold text-4xl">Create new game</h1>
         </div>
-        <form @submit.prevent="log">
+        <form @submit.prevent="start">
             <div class="flex flex-row justify-center mt-10">
                 <div class="w-1/3 flex flex-row justify-between gap-x-10">
-                    <Team :id="1" @updated-usernames="game.updateTeam" />
-                    <Team :id="2" @updated-usernames="game.updateTeam" />
+                    <Team :id="0" @updated-usernames="updateTeam" />
+                    <Team :id="1" @updated-usernames="updateTeam" />
                 </div>
             </div>
             <div class="mt-10 flex justify-center">

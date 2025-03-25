@@ -37,13 +37,14 @@ watch(usernames, (newUsernames) => {
         <VueDraggable ref="el" v-model="usernames" target=".sort-target">
             <transition-group type="transition" tag="ul" name="fade" class="sort-target">
                 <li v-for="(username, index) in usernames" :key="index">
-                    <UserInput v-model="usernames[index]" class="mt-2"/>
+                    <UserInput v-model="usernames[index]" class="mt-2" />
                 </li>
             </transition-group>
         </VueDraggable>
         <div class="flex justify-between px-5 pt-2">
-            <button @click="addUser" class="mt-1 hover:opacity-60 cursor-pointer"><i class="pi pi-plus"></i></button>
-            <button @click="removeUser" class="mt-1 hover:opacity-60 cursor-pointer"><i
+            <button type="button" @click="addUser" class="mt-1 hover:opacity-60 cursor-pointer"><i
+                    class="pi pi-plus"></i></button>
+            <button type="button" @click="removeUser" class="mt-1 hover:opacity-60 cursor-pointer"><i
                     class="pi pi-minus"></i></button>
         </div>
     </div>

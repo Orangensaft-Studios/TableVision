@@ -5,10 +5,5 @@ const teamName = defineModel();
 </script>
 
 <template>
-    <InputGroup>
-        <InputGroupAddon>
-            <i class="pi pi-users"></i>
-        </InputGroupAddon>
-        <InputText placeholder="Team Name" v-model="teamName" required />
-    </InputGroup>
+    <InputText placeholder="Teamname" v-model="teamName" required />
 </template>

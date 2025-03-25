@@ -1,8 +1,8 @@
 <script setup>
-import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useGameStore } from '@/stores/game'
 
-const games = ref([{ id: 1 }, { id: 2 }, { id: 3 }]);
+const gameStore = useGameStore();
 </script>
 
 <template>
@@ -18,8 +18,11 @@ const games = ref([{ id: 1 }, { id: 2 }, { id: 3 }]);
         </div>
         <div class="flex flex-col items-center mt-10">
             <h2>Last Rounds</h2>
-            <div class="flex flex-col gap-y-4">
-                <RouterLink v-for="game in games" :to="'/games/' + game.id">Round {{ game.id }}</RouterLink>
+            <div class="flex flex-col gap-y-4" v-if="gameStore.games.length > 0">
+                <RouterLink v-for="game in gameStore.games" :to="'/games/' + game.id">Round {{ game.id }}</RouterLink>
+            </div>
+            <div v-else>
+                <span>No rounds played yet</span>
             </div>
         </div>
     </div>

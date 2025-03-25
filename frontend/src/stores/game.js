@@ -1,13 +1,21 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { useRouter } from 'vue-router'
+import { useStorage } from '@vueuse/core'
 
 export const useGameStore = defineStore('game', () => {
 
-  const teams = ref([])
+  const router = useRouter();
+  const game = useStorage('game', {});
+  const games = useStorage('games', []);
 
-  function updateTeam(usernames, teamName, teamID) {  
-    teams.value[teamID] = { username: usernames, team: teamName }
+  function startGame(teams) {
+    console.log('Starting game with teams:', teams);
+    
+    game.value = {id: games.value.length, teams: teams};
+    games.value.push(game.value);
+    router.push({ name: 'games', params: { id: game.value.id } })
   }
 
-  return { updateTeam, teams }
+  return { startGame, games, game }
 })
