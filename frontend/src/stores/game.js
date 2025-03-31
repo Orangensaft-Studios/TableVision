@@ -9,32 +9,40 @@ export const useGameStore = defineStore('game', () => {
 
   async function startGame(teams) {
     const game = {
-      id: games.value.length,
+      id: games.value.length + 1,
       teams: teams.map((team, index) => ({
         ...team,
         points: 0,
         isTurn: index === 0,
         currentPlayerIndex: 0,
         ballType: undefined,
+        balls: [],
+        usernames: team.usernames.map((username) => ({
+          name: username,
+          fouls: 0,
+          points: 0,
+        })),
       })),
     }
-    await games.value.push(game)
-    router.push({ name: 'games', params: { id: game.id } })
+    games.value.push(game)
+    await router.push({ name: 'games', params: { id: game.id } })
   }
 
-  function playedBall(gameID, teamIndex, ballType) {
-    console.log('Played ball:', ballType, 'for team index:', teamIndex)
+  function playedBall(gameID, teamIndex, ballType, number) {
+    console.log('Played ball:', ballType, 'for team index:', teamIndex, 'and number:', number)
     if (!isAnyBallTypeSet(gameID)) {
       setTeamBallType(gameID, teamIndex, ballType)
     }
 
     const teamBallType = getTeamBallType(gameID, teamIndex)
     if (teamBallType === ballType) {
-      games.value[getGameIndex(gameID)].teams[teamIndex].points += 1
+      games.value[getGameIndex(gameID)].teams[teamIndex].points += 1;
+      addBall(gameID, teamIndex, number);
     } else {
       const otherTeamID = teamIndex === 0 ? 1 : 0
-      games.value[getGameIndex(gameID)].teams[otherTeamID].points += 1
-      switchTurns(gameID, teamIndex)
+      games.value[getGameIndex(gameID)].teams[otherTeamID].points += 1;
+      addBall(gameID, otherTeamID, number)
+      switchTurns(gameID, teamIndex);
     }
   }
 
@@ -71,13 +79,22 @@ export const useGameStore = defineStore('game', () => {
       getCurrentGame(gameID).teams[teamIndex].usernames.length
   }
 
-  function getCurrentPlayer(gameID, teamIndex) {
+  function getCurrentPlayerName(gameID, teamIndex) {
     const team = getTeam(gameID, teamIndex);
     
     if (team) {
-      return team.usernames[team.currentPlayerIndex]
+      return team.usernames[team.currentPlayerIndex].name;
     }
-    return null
+    return null;
+  }
+
+  function getCurrentPlayerIndex(gameID, teamIndex) {
+    const team = getTeam(gameID, teamIndex);
+    
+    if (team) {
+      return team.currentPlayerIndex;
+    }
+    return null;
   }
 
   function getGameIndex(gameID) {
@@ -93,5 +110,34 @@ export const useGameStore = defineStore('game', () => {
     return currentTeamIndex;
   }
 
-  return { startGame, playedBall, getCurrentPlayer, getCurrentTeamIndex, getCurrentGame, games }
+  function foul(gameID, teamIndex) {
+    games.value[getGameIndex(gameID)].teams[teamIndex].usernames[getCurrentPlayerIndex(gameID, teamIndex)].fouls += 1
+    switchTurns(gameID, teamIndex === 0 ? 1 : 0);
+  }
+
+  function security(gameID, teamIndex) {
+
+  }
+
+  function end(gameID) {
+    
+  }
+
+  function clear() {
+    games.value = [];
+  }
+
+  function addBall(gameID, teamIndex, ball) {
+    games.value[getGameIndex(gameID)].teams[teamIndex].balls.push(ball);
+  }
+
+  function getBalls(gameID, teamIndex) {
+    return games.value[getGameIndex(gameID)].teams[teamIndex].balls;
+  }
+
+  function getBall(gameID, ball) {
+    return getCurrentGame(gameID).teams.some((team) => team.balls.includes(ball))
+  }
+
+  return { startGame, playedBall, getCurrentPlayerName, getCurrentTeamIndex, getCurrentGame, foul, switchTurns, security, end, clear, addBall, getBalls, getBall, games }
 })

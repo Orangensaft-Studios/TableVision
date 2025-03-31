@@ -3,10 +3,14 @@ import { RouterLink } from 'vue-router'
 import { useGameStore } from '@/stores/game'
 
 const gameStore = useGameStore();
+
+function clear() {
+    gameStore.clear();
+}
 </script>
 
 <template>
-    <div class="flex flex-col">
+    <div class="flex flex-col h-full">
         <div class="flex flex-col items-center mt-20">
             <span class="text-2xl">Welcome to</span>
             <h1 class="font-bold text-5xl">TableVision</h1>
@@ -25,5 +29,7 @@ const gameStore = useGameStore();
                 <span>No rounds played yet</span>
             </div>
         </div>
+        <div class="flex justify-center mt-60 text-red-500 underline"><button class="cursor-pointer"
+                @click="clear">Clear local storage</button></div>
     </div>
 </template>

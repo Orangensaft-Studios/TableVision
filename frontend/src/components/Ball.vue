@@ -1,19 +1,25 @@
 <script setup>
+import { ref, computed } from 'vue';
+import { useGameStore } from '@/stores/game';
+
 const props = defineProps({
     number: {
         type: Number,
         required: true,
         validator: (value) => {
-            return value >= 1 && value <= 15;
+            return value >= 0 && value <= 15;
         }
     },
     teamId: {
         type: Number,
         required: false,
     },
+    gameId: {
+        type: Number,
+        required: false,
+    },
 });
-import { ref, computed } from 'vue';
-import { useGameStore } from '@/stores/game';
+
 
 const gameStore = useGameStore();
 
@@ -33,14 +39,42 @@ const thisColor = computed(() => {
 });
 
 const type = ref(props.number > 8 ? 'striped' : 'solid');
+
+function playBall() {
+    if (props.teamId !== undefined && props.gameId !== undefined) {
+        gameStore.playedBall(props.gameId, props.teamId, type.value, props.number);
+    }
+}
+
+const isHidden = computed(() => {
+    if (props.teamId !== undefined && props.gameId !== undefined) {
+        return gameStore.getBall(props.gameId, props.number);
+    }
+})
 </script>
 
 <template>
-    <button @click="gameStore.playedBall(teamId, type)" class="hover:cursor-pointer rounded-full relative">
-
-        <svg id="Ebene_2" data-name="Ebene 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 324"
-            v-if="number < 9">
-            <g id="Ebene_1-2" data-name="Ebene 1">
+    <button @click="playBall" :class="isHidden ? 'invisible' : ''"
+        class="hover:cursor-pointer rounded-full relative w-10 h-10">
+        <svg v-if="number === 0" id="Ebene_2_1" data-name="Ebene 2 1" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 324 324">
+            <g id="Ebene_1-2_2" data-name="Ebene 1 2">
+                <g>
+                    <path fill="#ffffff"
+                        d="M162,320.5C74.6,320.5,3.5,249.4,3.5,162S74.6,3.5,162,3.5s158.5,71.1,158.5,158.5-71.1,158.5-158.5,158.5Z" />
+                    <path
+                        d="M162,7c41.4,0,80.33,16.12,109.6,45.4,29.28,29.28,45.4,68.2,45.4,109.6s-16.12,80.33-45.4,109.6c-29.28,29.28-68.2,45.4-109.6,45.4s-80.33-16.12-109.6-45.4C23.12,242.33,7,203.4,7,162S23.12,81.67,52.4,52.4C81.67,23.12,120.6,7,162,7M162,0C72.53,0,0,72.53,0,162s72.53,162,162,162,162-72.53,162-162S251.47,0,162,0h0Z" />
+                </g>
+                <g class="cls-2">
+                    <path
+                        d="M117.16,72.57c7.47,7.47-3.05,20.96-15.29,33.19s-24.19,23.04-31.66,15.57c-7.47-7.47-3.93-29,8.31-41.23s31.17-15.01,38.64-7.54Z"
+                        fill="#EAEAEA" fill-opacity="0.79" />
+                </g>
+            </g>
+        </svg>
+        <svg v-else-if="number < 9" id="Ebene_2_1" data-name="Ebene 2 1" xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 324 324">
+            <g id="Ebene_1-2_2" data-name="Ebene 1 2">
                 <g>
                     <path :fill="thisColor"
                         d="M162,320.5C74.6,320.5,3.5,249.4,3.5,162S74.6,3.5,162,3.5s158.5,71.1,158.5,158.5-71.1,158.5-158.5,158.5Z" />
@@ -64,7 +98,7 @@ const type = ref(props.number > 8 ? 'striped' : 'solid');
                 </g>
             </g>
         </svg>
-        <svg id="Ebene_2" data-name="Ebene 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 324" v-else>
+        <svg v-else id="Ebene_2" data-name="Ebene 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 324">
             <g id="Ebene_1-2" data-name="Ebene 1">
                 <g>
                     <path class="cls-1" fill="#ffffff"
