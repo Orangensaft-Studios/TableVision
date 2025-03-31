@@ -42,13 +42,10 @@ onMounted(() => {
         <Header><template #action><!--statsbutton--></template></Header>
         <div class="flex flex-col mx-4 mb-2 w-full text-xl">
             <!-- Teams -->
-            <div class="flex justify-between"> <span class=" text-slate-600">Team {{
-                    
-                    }}</span>
+            <div class="flex justify-between">
+                <span class=" text-slate-600">Team {{ gameStore.currentGame.teams[0].team }}</span>
                 <span class="text-2xl">{{ team1Points }}:{{ team2Points }}</span>
-                <span class="text-slate-600 text-end">Team {{ 
-                 }}</span>
-
+                <span class="text-slate-600 text-end">Team {{ gameStore.currentGame.teams[1].team }}</span>
             </div>
 
             
