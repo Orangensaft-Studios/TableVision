@@ -5,6 +5,7 @@ import FakeBillardTable from '@/components/FakeBillardTable.vue';
 import Button from 'primevue/button';
 import { useGameStore } from '@/stores/game';
 import { onMounted, watch, ref } from 'vue';
+import Ball from '@/components/Ball.vue';
 
 
 const route = useRoute();
@@ -44,22 +45,27 @@ onMounted(() => {
             <!-- Teams -->
             <div v-if="gameStore.currentGame?.teams?.length >= 2" class="flex justify-between">
                 <span class=" text-slate-600">Team {{ gameStore.currentGame.teams[0].name }}</span>
-                <span class="text-2xl">{{ team1Points }}:{{ team2Points }}</span>
+                <span class="text-2xl flex gap-x-2">
+                    <Ball :number="5" class="w-7" />{{ team1Points }}:{{ team2Points }}
+                    <Ball :number="9" class="w-7" />
+                </span>
                 <span class="text-slate-600 text-end">Team {{ gameStore.currentGame.teams[1].name }}</span>
             </div>
 
 
             <div class="flex justify-between">
-                <span class="text-3xl" :class="gameStore.currentGame.teams[0].isTurn ? 'font-bold' : ''">{{ gameStore.getCurrentPlayer(0)
+                <span class="text-3xl" :class="gameStore.currentGame.teams[0].isTurn ? 'font-bold' : ''">{{
+                    gameStore.getCurrentPlayer(0)
                     }}</span>
-                <span class="text-3xl" :class="gameStore.currentGame.teams[1].isTurn ? 'font-bold' : ''">{{ gameStore.getCurrentPlayer(1)
+                <span class="text-3xl" :class="gameStore.currentGame.teams[1].isTurn ? 'font-bold' : ''">{{
+                    gameStore.getCurrentPlayer(1)
                     }}</span>
             </div>
 
         </div>
         <div class="w-[50vw] h-[60vh]">
             <!--Place Billard table here-->
-            <FakeBillardTable :current-team-id="gameStore.getCurrentTeamIndex()"/>
+            <FakeBillardTable :current-team-id="gameStore.getCurrentTeamIndex()" />
         </div>
 
         <div class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3 mt-5">
@@ -67,6 +73,8 @@ onMounted(() => {
             <Button label="Security" severity="warning" />
             <Button label="Next" severity="info" />
             <Button label="End game" severity="contrast" class="self-end" />
+
+
         </div>
 
     </div>
