@@ -1,6 +1,7 @@
 <script setup>
 import { useRoute } from 'vue-router';
 import Header from '@/components/Header.vue';
+import FakeBillardTable from '@/components/FakeBillardTable.vue';
 import Button from 'primevue/button';
 import { useGameStore } from '@/stores/game';
 import { onMounted } from 'vue';
@@ -42,9 +43,10 @@ console.log(gameStore.currentGame);
         </div>
         <div class="w-[50vw] h-[60vh]">
             <!--Place Billard table here-->
+            <FakeBillardTable />
         </div>
 
-        <div class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3">
+        <div class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3 mt-5">
             <Button label="Foul" severity="danger" />
             <Button label="Security" severity="warning" />
             <Button label="Next" severity="info" />
