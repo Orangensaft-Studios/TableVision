@@ -6,3 +6,14 @@
     font-family: 'League Spartan', sans-serif;
   }
 }
+
+/* Order */
+@layer reset, primevue;
+
+/* Reset CSS */
+@layer reset {
+    button,
+    input {
+        /* CSS to Reset */
+    }
+}
