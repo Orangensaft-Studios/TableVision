@@ -26,8 +26,11 @@ export const useGameStore = defineStore('game', () => {
     const teamBallType = getTeamBallType(teamIndex)
     if (teamBallType === ballType) {
       console.log(`Team ${teamIndex} played their own ball type: ${ballType}`)
+      currentGame.value.teams[teamIndex].points += 1
     } else {
       console.log(`Team ${teamIndex} played the opponent's ball type: ${ballType}`)
+      const otherTeamID = teamIndex === 0 ? 1 : 0
+      currentGame.value.teams[otherTeamID].points += 1
     }
   }
 
@@ -42,9 +45,11 @@ export const useGameStore = defineStore('game', () => {
 
   function setTeamBallType(teamIndex, ballType) {
     currentGame.value.teams[teamIndex].ballType = ballType
+    currentGame.value.teams[teamIndex].points = 0
     const otherTeamID = teamIndex === 0 ? 1 : 0
     const otherBallType = ballType === 'solid' ? 'striped' : 'solid'
     currentGame.value.teams[otherTeamID].ballType = otherBallType
+    currentGame.value.teams[otherTeamID].points = 0
     console.log(
       `Team ${teamID} is assigned ${ballType}, and team ${otherTeamID} is assigned ${otherBallType}`,
     )

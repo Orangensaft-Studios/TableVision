@@ -4,18 +4,36 @@ import Header from '@/components/Header.vue';
 import FakeBillardTable from '@/components/FakeBillardTable.vue';
 import Button from 'primevue/button';
 import { useGameStore } from '@/stores/game';
-import { onMounted } from 'vue';
+import { onMounted, watch, ref } from 'vue';
 
 
 const route = useRoute();
 const gameStore = useGameStore();
 
+const team1Points = ref(0);
+const team2Points = ref(0);
+
 onMounted(() => {
     gameStore.setCurrentGame(route.params.id); 
-})
+    watch(
+        () => gameStore.currentGame,
+        (newGame) => {
+            if (newGame && newGame.teams) {
+                team1Points.value = newGame.teams[0]?.points || 0;
+                team2Points.value = newGame.teams[1]?.points || 0;
+            }
+        },
+        { immediate: true }
+    );
 
-console.log(route.params.id);
-console.log(gameStore.currentGame);
+    watch(() => gameStore.currentGame?.teams[0]?.points, (newPoints) => {
+        team1Points.value = newPoints || 0;
+    });
+
+    watch(() => gameStore.currentGame?.teams[1]?.points, (newPoints) => {
+        team2Points.value = newPoints || 0;
+    });
+})
 
 </script>
 
@@ -27,7 +45,7 @@ console.log(gameStore.currentGame);
             <div class="flex justify-between"> <span class=" text-slate-600">Team {{
                     
                     }}</span>
-                <span class="text-2xl">{{ 5 }}:{{ 2 }}</span>
+                <span class="text-2xl">{{ team1Points }}:{{ team2Points }}</span>
                 <span class="text-slate-600 text-end">Team {{ 
                  }}</span>
 
