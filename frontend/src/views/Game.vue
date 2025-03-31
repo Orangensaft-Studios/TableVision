@@ -10,14 +10,14 @@ import Ball from '@/components/Ball.vue';
 
 const route = useRoute();
 const gameStore = useGameStore();
+const id = Number(route.params.id);
 
 const team1Points = ref(0);
 const team2Points = ref(0);
 
 onMounted(() => {
-    gameStore.setCurrentGame(route.params.id); 
     watch(
-        () => gameStore.currentGame,
+        () => gameStore.getCurrentGame(id),
         (newGame) => {
             if (newGame && newGame.teams) {
                 team1Points.value = newGame.teams[0]?.points || 0;
@@ -27,11 +27,11 @@ onMounted(() => {
         { immediate: true }
     );
 
-    watch(() => gameStore.currentGame?.teams[0]?.points, (newPoints) => {
+    watch(() => gameStore.getCurrentGame(id)?.teams[0]?.points, (newPoints) => {
         team1Points.value = newPoints || 0;
     });
 
-    watch(() => gameStore.currentGame?.teams[1]?.points, (newPoints) => {
+    watch(() => gameStore.getCurrentGame(id)?.teams[1]?.points, (newPoints) => {
         team2Points.value = newPoints || 0;
     });
 })
@@ -43,29 +43,27 @@ onMounted(() => {
         <Header><template #action><!--statsbutton--></template></Header>
         <div class="flex flex-col mx-4 mb-2 w-full text-xl">
             <!-- Teams -->
-            <div v-if="gameStore.currentGame?.teams?.length >= 2" class="flex justify-between">
-                <span class=" text-slate-600">Team {{ gameStore.currentGame.teams[0].name }}</span>
+            <div v-if="gameStore.getCurrentGame(id)?.teams?.length >= 2" class="flex justify-between">
+                <span class=" text-slate-600">Team {{ gameStore.getCurrentGame(id).teams[0].name }}</span>
                 <span class="text-2xl flex gap-x-2">
                     <Ball :number="5" class="w-7" />{{ team1Points }}:{{ team2Points }}
                     <Ball :number="9" class="w-7" />
                 </span>
-                <span class="text-slate-600 text-end">Team {{ gameStore.currentGame.teams[1].name }}</span>
+                <span class="text-slate-600 text-end">Team {{ gameStore.getCurrentGame(id).teams[1].name }}</span>
             </div>
 
 
             <div class="flex justify-between">
-                <span class="text-3xl" :class="gameStore.currentGame.teams[0].isTurn ? 'font-bold' : ''">{{
-                    gameStore.getCurrentPlayer(0)
+                <span class="text-3xl" :class="gameStore.getCurrentGame(id).teams[0].isTurn ? 'font-bold' : ''">{{ gameStore.getCurrentPlayer(id, 0)
                     }}</span>
-                <span class="text-3xl" :class="gameStore.currentGame.teams[1].isTurn ? 'font-bold' : ''">{{
-                    gameStore.getCurrentPlayer(1)
+                <span class="text-3xl" :class="gameStore.getCurrentGame(id).teams[1].isTurn ? 'font-bold' : ''">{{ gameStore.getCurrentPlayer(id, 1)
                     }}</span>
             </div>
 
         </div>
         <div class="w-[50vw] h-[60vh]">
             <!--Place Billard table here-->
-            <FakeBillardTable :current-team-id="gameStore.getCurrentTeamIndex()" />
+            <FakeBillardTable :current-team-id="gameStore.getCurrentTeamIndex(id)" :game-id="id"/>
         </div>
 
         <div class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3 mt-5">
