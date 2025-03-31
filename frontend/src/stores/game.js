@@ -13,6 +13,13 @@ export const useGameStore = defineStore('game', () => {
     console.log('Starting game with teams:', teams);
     
     currentGame.value = {id: games.value.length, teams: teams};
+    currentGame.value.teams[0].points = 0
+    currentGame.value.teams[0].isTurn = true
+    currentGame.value.teams[0].currentPlayerIndex = 0
+
+    currentGame.value.teams[1].points = 0
+    currentGame.value.teams[1].isTurn = false
+    currentGame.value.teams[1].currentPlayerIndex = 0
     games.value.push(currentGame.value);
     router.push({ name: 'games', params: { id: currentGame.value.id } })
   }
@@ -31,6 +38,7 @@ export const useGameStore = defineStore('game', () => {
       console.log(`Team ${teamIndex} played the opponent's ball type: ${ballType}`)
       const otherTeamID = teamIndex === 0 ? 1 : 0
       currentGame.value.teams[otherTeamID].points += 1
+      switchTurns(teamIndex)
     }
   }
 
@@ -45,14 +53,32 @@ export const useGameStore = defineStore('game', () => {
 
   function setTeamBallType(teamIndex, ballType) {
     currentGame.value.teams[teamIndex].ballType = ballType
-    currentGame.value.teams[teamIndex].points = 0
+
     const otherTeamID = teamIndex === 0 ? 1 : 0
     const otherBallType = ballType === 'solid' ? 'striped' : 'solid'
+
     currentGame.value.teams[otherTeamID].ballType = otherBallType
-    currentGame.value.teams[otherTeamID].points = 0
-    console.log(
-      `Team ${teamID} is assigned ${ballType}, and team ${otherTeamID} is assigned ${otherBallType}`,
-    )
+  }
+
+  function switchTurns(teamIndex) {
+    console.log('Switching turns for team:', teamIndex)
+    currentGame.value.teams.forEach(team => {
+      team.isTurn = !team.isTurn
+    })
+    currentGame.value.teams[teamIndex].currentPlayerIndex = (currentGame.value.teams[teamIndex].currentPlayerIndex + 1) % currentGame.value.teams[teamIndex].usernames.length
+  }
+
+  function getCurrentPlayer(teamIndex) {
+    const team = currentGame.value.teams[teamIndex]
+    console.log('Current player index:', team.currentPlayerIndex)
+    console.log('Current player usernames:', team.usernames)
+    console.log('Current player:', team.usernames[team.currentPlayerIndex]);
+    
+    if (team) {
+      console.log(team.usernames[team.currentPlayerIndex])
+      return team.usernames[team.currentPlayerIndex]
+    }
+    return null
   }
 
   function setCurrentGame(gameID) {
@@ -60,5 +86,11 @@ export const useGameStore = defineStore('game', () => {
     currentGame.value = games.value[gameID];
   }
 
-  return { startGame, playedBall, setCurrentGame, games, currentGame }
+  function getCurrentTeamIndex() {
+    const currentTeamIndex = currentGame.value.teams.findIndex(team => team.isTurn);
+    console.log('Current team index:', currentTeamIndex)
+    return currentTeamIndex
+  }
+
+  return { startGame, playedBall, getCurrentPlayer, setCurrentGame, getCurrentTeamIndex, games, currentGame }
 })

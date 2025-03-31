@@ -7,7 +7,7 @@ const game = useGameStore();
 const teams = ref([]);
 
 function updateTeam(usernames, teamName, teamID) {
-    teams.value[teamID] = { username: usernames, team: teamName }
+    teams.value[teamID] = { usernames: usernames, name: teamName }
 }
 
 function start() {

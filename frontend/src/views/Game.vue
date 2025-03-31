@@ -42,22 +42,24 @@ onMounted(() => {
         <Header><template #action><!--statsbutton--></template></Header>
         <div class="flex flex-col mx-4 mb-2 w-full text-xl">
             <!-- Teams -->
-            <div class="flex justify-between">
-                <span class=" text-slate-600">Team {{ gameStore.currentGame.teams[0].team }}</span>
+            <div v-if="gameStore.currentGame?.teams?.length >= 2" class="flex justify-between">
+                <span class=" text-slate-600">Team {{ gameStore.currentGame.teams[0].name }}</span>
                 <span class="text-2xl">{{ team1Points }}:{{ team2Points }}</span>
-                <span class="text-slate-600 text-end">Team {{ gameStore.currentGame.teams[1].team }}</span>
+                <span class="text-slate-600 text-end">Team {{ gameStore.currentGame.teams[1].name }}</span>
             </div>
 
-            
+
             <div class="flex justify-between">
-                <span class="text-3xl">{{ "Roman" }}</span>
-                <span class="text-3xl">{{ "Sevi" }}</span>
+                <span class="text-3xl" :class="gameStore.currentGame.teams[0].isTurn ? 'font-bold' : ''">{{ gameStore.getCurrentPlayer(0)
+                    }}</span>
+                <span class="text-3xl" :class="gameStore.currentGame.teams[1].isTurn ? 'font-bold' : ''">{{ gameStore.getCurrentPlayer(1)
+                    }}</span>
             </div>
 
         </div>
         <div class="w-[50vw] h-[60vh]">
             <!--Place Billard table here-->
-            <FakeBillardTable />
+            <FakeBillardTable :current-team-id="gameStore.getCurrentTeamIndex()"/>
         </div>
 
         <div class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3 mt-5">
