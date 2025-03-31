@@ -47,7 +47,9 @@ console.log(gameStore.currentGame);
         <div class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3">
             <Button label="Foul" severity="danger" />
             <Button label="Security" severity="warning" />
-            <Button label="Next" severity="contrast" />
+            <Button label="Next" severity="info" />
+            <Button label="End game" severity="contrast" class="self-end" />
+            
 
         </div>
 
