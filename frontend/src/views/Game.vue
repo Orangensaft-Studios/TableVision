@@ -40,7 +40,7 @@ onMounted(() => {
 <template>
     <div class="flex flex-col items-center h-full mx-[20vw]">
         <Header><template #action><!--statsbutton--></template></Header>
-        <div class="flex flex-col mx-4 w-full text-xl">
+        <div class="flex flex-col mx-4 mb-2 w-full text-xl">
             <!-- Teams -->
             <div class="flex justify-between"> <span class=" text-slate-600">Team {{
                     
@@ -68,8 +68,6 @@ onMounted(() => {
             <Button label="Security" severity="warning" />
             <Button label="Next" severity="info" />
             <Button label="End game" severity="contrast" class="self-end" />
-            
-
         </div>
 
     </div>

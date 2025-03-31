@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineModel, watch, defineEmits } from 'vue';
+import { ref, watch, defineEmits } from 'vue';
 
 import TeamInput from './TeamInput.vue';
 import UserInput from './UserInput.vue';

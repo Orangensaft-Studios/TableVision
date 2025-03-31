@@ -33,5 +33,13 @@ const colorClasses = {
 
 
 <template>
-    <button @click="gameStore.playedBall(teamId, type)" class="px-5 py-3 hover:cursor-pointer rounded-full" :class="colorClasses[color]">{{ number }}</button>
+    <button @click="gameStore.playedBall(teamId, type)"
+        class="w-16 h-16 overflow-hidden hover:cursor-pointer rounded-full relative"
+        :class="type === 'solid' ? colorClasses[color] : ''">
+        <span v-if="type === 'striped'" class="absolute bg-white h-[30%] top-0 left-0 right-0 rounded-t-full"></span>
+        <span v-if="type === 'striped'" :class="colorClasses[color]"
+            class="absolute h-[60%] top-[20%] left-0 right-0"></span>
+        <span v-if="type === 'striped'" class="absolute bg-white h-[20%] bottom-0 left-0 right-0 rounded-b-full"></span>
+        <span class="relative">{{ number }}</span>
+    </button>
 </template>
