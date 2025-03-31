@@ -5,7 +5,7 @@ import FakeBillardBall from './FakeBillardBall.vue';
 
 <template>
     <div class="w-full h-full bg-green-600 rounded-lg flex justify-center items-center relative">
-        <FakeBillardBall number="1" color="yellow" />
-        <FakeBillardBall number="2" color="blue" />
+        <FakeBillardBall number="1" color="yellow" type="solid" :team-id="0" />
+        <FakeBillardBall number="2" color="blue" type="striped" :team-id="1"/>
     </div>
 </template>

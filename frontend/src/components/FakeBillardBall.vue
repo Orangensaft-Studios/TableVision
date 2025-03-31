@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useGameStore } from '@/stores/game';
+
+const gameStore = useGameStore();
 
 defineProps({
     number: {
@@ -9,6 +12,14 @@ defineProps({
         type: String,
         required: true,
     },
+    type: {
+        type: String,
+        default: 'solid',
+    },
+    teamId: {
+        type: Number,
+        required: false,
+    },
 });
 
 const colorClasses = {
@@ -17,11 +28,10 @@ const colorClasses = {
     green: 'bg-green-500',
     yellow: 'bg-yellow-500',
     purple: 'bg-purple-500',
-    // Add more colors as needed
 };
 </script>
 
 
 <template>
-    <button class="px-5 py-3 hover:cursor-pointer rounded-full" :class="colorClasses[color]">{{ number }}</button>
+    <button @click="gameStore.playedBall(teamId, type)" class="px-5 py-3 hover:cursor-pointer rounded-full" :class="colorClasses[color]">{{ number }}</button>
 </template>

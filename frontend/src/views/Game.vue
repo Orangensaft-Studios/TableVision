@@ -6,15 +6,13 @@ import Button from 'primevue/button';
 import { useGameStore } from '@/stores/game';
 import { onMounted } from 'vue';
 
-onMounted(() => {
-    if (!gameStore.currentGame) {
-        // 
-    }
-})
-// game.setGameId(route.params.id);
 
 const route = useRoute();
 const gameStore = useGameStore();
+
+onMounted(() => {
+    gameStore.setCurrentGame(route.params.id); 
+})
 
 console.log(route.params.id);
 console.log(gameStore.currentGame);
@@ -27,10 +25,11 @@ console.log(gameStore.currentGame);
         <div class="flex flex-col mx-4 w-full text-xl">
             <!-- Teams -->
             <div class="flex justify-between"> <span class=" text-slate-600">Team {{
-                    gameStore.currentGame.teams[0].team
+                    
                     }}</span>
                 <span class="text-2xl">{{ 5 }}:{{ 2 }}</span>
-                <span class="text-slate-600 text-end">Team {{ gameStore.currentGame.teams[1].team }}</span>
+                <span class="text-slate-600 text-end">Team {{ 
+                 }}</span>
 
             </div>
 

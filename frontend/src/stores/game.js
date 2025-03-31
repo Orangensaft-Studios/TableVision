@@ -17,5 +17,43 @@ export const useGameStore = defineStore('game', () => {
     router.push({ name: 'games', params: { id: currentGame.value.id } })
   }
 
-  return { startGame, games, currentGame }
+  function playedBall(teamIndex, ballType) {
+    console.log('Team', teamIndex, 'played ball type:', ballType)
+    if (!isAnyBallTypeSet()) {
+      setTeamBallType(teamIndex, ballType)
+    }
+
+    const teamBallType = getTeamBallType(teamIndex)
+    if (teamBallType === ballType) {
+      console.log(`Team ${teamIndex} played their own ball type: ${ballType}`)
+    } else {
+      console.log(`Team ${teamIndex} played the opponent's ball type: ${ballType}`)
+    }
+  }
+
+  function isAnyBallTypeSet() {
+    return currentGame.value.teams.some(team => team.ballType !== undefined)
+  }
+
+  function getTeamBallType(teamIndex) {
+    const team = currentGame.value.teams[teamIndex];
+    return team ? team.ballType : undefined
+  }
+
+  function setTeamBallType(teamIndex, ballType) {
+    currentGame.value.teams[teamIndex].ballType = ballType
+    const otherTeamID = teamIndex === 0 ? 1 : 0
+    const otherBallType = ballType === 'solid' ? 'striped' : 'solid'
+    currentGame.value.teams[otherTeamID].ballType = otherBallType
+    console.log(
+      `Team ${teamID} is assigned ${ballType}, and team ${otherTeamID} is assigned ${otherBallType}`,
+    )
+  }
+
+  function setCurrentGame(gameID) {
+    console.log('Setting current game to:', gameID)
+    currentGame.value = games.value[gameID];
+  }
+
+  return { startGame, playedBall, setCurrentGame, games, currentGame }
 })
