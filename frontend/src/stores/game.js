@@ -33,16 +33,18 @@ export const useGameStore = defineStore('game', () => {
     if (!isAnyBallTypeSet(gameID)) {
       setTeamBallType(gameID, teamIndex, ballType)
     }
-
+    const gameIndex = getGameIndex(gameID);
+    const currentPlayerIndex = getCurrentPlayerIndex(gameID, teamIndex);
     const teamBallType = getTeamBallType(gameID, teamIndex)
     if (teamBallType === ballType) {
-      games.value[getGameIndex(gameID)].teams[teamIndex].points += 1;
+      games.value[gameIndex].teams[teamIndex].points += 1;
+      games.value[gameIndex].teams[teamIndex].usernames[currentPlayerIndex].points += 1
       addBall(gameID, teamIndex, number);
     } else {
       const otherTeamID = teamIndex === 0 ? 1 : 0
-      games.value[getGameIndex(gameID)].teams[otherTeamID].points += 1;
+      games.value[gameIndex].teams[otherTeamID].points += 1
       addBall(gameID, otherTeamID, number)
-      switchTurns(gameID, teamIndex);
+      //switchTurns(gameID, teamIndex);
     }
   }
 
