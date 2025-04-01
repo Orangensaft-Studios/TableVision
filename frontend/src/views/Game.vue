@@ -61,11 +61,11 @@ onMounted(() => {
                 <span class=" text-slate-600">Team {{ gameStore.getCurrentGame(id).teams[0].name }}</span>
                 <div class="text-2xl flex gap-x-2">
                     <div>
-                        <Ball v-for="ball in team1Balls" :key="ball" :number="ball" class="w-7" />
+                        <Ball v-for="ball in team1Balls" :key="ball" :number="ball" class="w-7" :clickable="false" />
                     </div>
                     <span>{{ team1Points }}:{{team2Points }}</span>
                     <div>
-                        <Ball v-for="ball in team2Balls" :key="ball" :number="ball" class="w-7" />
+                        <Ball v-for="ball in team2Balls" :key="ball" :number="ball" class="w-7" :clickable="false" />
                     </div>
                 </div>
                 <span class="text-slate-600 text-end">Team {{ gameStore.getCurrentGame(id).teams[1].name }}</span>
