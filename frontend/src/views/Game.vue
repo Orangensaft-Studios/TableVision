@@ -1,13 +1,14 @@
 <script setup>
-import { useRoute } from 'vue-router';
 import Header from '@/components/Header.vue';
 import FakeBillardTable from '@/components/FakeBillardTable.vue';
 import Button from 'primevue/button';
 import { useGameStore } from '@/stores/game';
 import { onMounted, watch, ref } from 'vue';
 import Ball from '@/components/Ball.vue';
+import Dialog from 'primevue/dialog';
+import { useRoute, useRouter } from 'vue-router'
 
-
+const router = useRouter();
 const route = useRoute();
 const gameStore = useGameStore();
 const id = Number(route.params.id);
@@ -17,6 +18,8 @@ const team2Points = ref(0);
 
 const team1Balls = ref([]);
 const team2Balls = ref([]);
+
+const visible = ref(false);
 
 onMounted(() => {
     
@@ -48,7 +51,13 @@ onMounted(() => {
     watch(() => gameStore.getBalls(id, 1), (newBalls) => {
         team2Balls.value = newBalls || [];
     });
-})
+});
+
+function endGame(route) {
+    visible.value = false;
+    gameStore.end(id);
+    router.push({ name: route });
+}
 
 </script>
 
@@ -92,8 +101,16 @@ onMounted(() => {
             <Button label="Security" severity="warning" />
             <Button label="Next" severity="info"
                 @click="gameStore.switchTurns(id, gameStore.getCurrentTeamIndex(id))" />
-            <Button label="End game" severity="contrast" class="self-end" />
+            <Button label="End game" severity="contrast" class="self-end" @click="visible = true" />
         </div>
+        <Dialog v-model:visible="visible" modal header="End game" :style="{ width: '25rem' }">
+            <span class="p-text-secondary block mb-5">This action will end the current game! Don't worry, your game data is saved.</span>
+            <div class="flex justify-content-end gap-2">
+                <Button type="button" label="Show stats" @click="endGame('stats')"></Button>
+                <Button type="button" label="Start new game" @click="endGame('new')"></Button>
+                <Button type="button" label="Exit to menu" @click="endGame('home')"></Button>
+            </div>
+        </Dialog>
 
     </div>
 </template>
