@@ -96,7 +96,7 @@ function endGame(route) {
             <FakeBillardTable :current-team-id="gameStore.getCurrentTeamIndex(id)" :game-id="id" />
         </div>
 
-        <div class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3 mt-5">
+        <div class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3 mt-5" v-if="!gameStore.getCurrentGame(id)?.isFinished">
             <Button label="Foul" severity="danger" @click="gameStore.foul(id, gameStore.getCurrentTeamIndex(id))" />
             <Button label="Security" severity="warning" />
             <Button label="Next" severity="info"
@@ -105,7 +105,7 @@ function endGame(route) {
         </div>
         <Dialog v-model:visible="visible" modal header="End game" :style="{ width: '25rem' }">
             <span class="p-text-secondary block mb-5">This action will end the current game! Don't worry, your game data is saved.</span>
-            <div class="flex justify-content-end gap-2">
+            <div class="flex justify-content-end gap-2" >
                 <Button type="button" label="Show stats" @click="endGame('stats')"></Button>
                 <Button type="button" label="Start new game" @click="endGame('new')"></Button>
                 <Button type="button" label="Exit to menu" @click="endGame('home')"></Button>

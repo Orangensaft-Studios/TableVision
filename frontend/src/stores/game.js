@@ -173,7 +173,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function end(gameID) {
-    
+    getCurrentGame(gameID).isFinished = true;
   }
 
   function clear() {
