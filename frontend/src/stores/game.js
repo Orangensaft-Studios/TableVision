@@ -10,6 +10,7 @@ export const useGameStore = defineStore('game', () => {
   async function startGame(teams) {
     const game = {
       id: games.value.length + 1,
+      isFinished: false,
       teams: teams.map((team, index) => ({
         ...team,
         points: 0,
@@ -29,23 +30,53 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function playedBall(gameID, teamIndex, ballType, number) {
-    console.log('Played ball:', ballType, 'for team index:', teamIndex, 'and number:', number)
     if (!isAnyBallTypeSet(gameID)) {
       setTeamBallType(gameID, teamIndex, ballType)
     }
     const gameIndex = getGameIndex(gameID);
     const currentPlayerIndex = getCurrentPlayerIndex(gameID, teamIndex);
     const teamBallType = getTeamBallType(gameID, teamIndex)
-    if (teamBallType === ballType) {
-      games.value[gameIndex].teams[teamIndex].points += 1;
-      games.value[gameIndex].teams[teamIndex].usernames[currentPlayerIndex].points += 1
-      addBall(gameID, teamIndex, number);
+
+    if (number !== 8) {
+      if (teamBallType === ballType) {
+        games.value[gameIndex].teams[teamIndex].points += 1
+        games.value[gameIndex].teams[teamIndex].usernames[currentPlayerIndex].points += 1
+        addBall(gameID, teamIndex, number)
+      } else {
+        const otherTeamID = teamIndex === 0 ? 1 : 0
+        games.value[gameIndex].teams[otherTeamID].points += 1
+        addBall(gameID, otherTeamID, number)
+      }
     } else {
-      const otherTeamID = teamIndex === 0 ? 1 : 0
-      games.value[gameIndex].teams[otherTeamID].points += 1
-      addBall(gameID, otherTeamID, number)
-      //switchTurns(gameID, teamIndex);
+      addBall(gameID, teamIndex, number)
     }
+    
+    console.log('Did current team win:', didCurrentTeamWin(gameID, teamIndex, number))
+  }
+
+  function is8ValidPlay(gameID, teamIndex) {
+    const game = getCurrentGame(gameID);
+    const team = game.teams[teamIndex];
+    const amount = team.balls.length;
+
+    if (amount === 8) {
+      games.value[getGameIndex(gameID)].teams[teamIndex].points += 1
+      games.value[getGameIndex(gameID)].teams[teamIndex].usernames[
+        getCurrentPlayerIndex(gameID, teamIndex)
+      ].points += 1
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function didCurrentTeamWin(gameID, teamIndex, ball) {
+    if (ball === 8) {
+      return is8ValidPlay(gameID, teamIndex);
+    }
+
+    return false;
+
   }
 
   function isAnyBallTypeSet(gameID) {

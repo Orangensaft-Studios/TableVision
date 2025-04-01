@@ -38,7 +38,13 @@ const thisColor = computed(() => {
     return colors.value[props.number < 9 ? props.number - 1 : props.number - 8];
 });
 
-const type = ref(props.number > 8 ? 'striped' : 'solid');
+
+const type = computed(() => {
+    if (props.number === 8) {
+        return 'black';
+    }
+    return props.number > 8 ? 'striped' : 'solid';
+});
 
 function playBall() {
     if (props.teamId !== undefined && props.gameId !== undefined) {
