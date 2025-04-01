@@ -23,7 +23,7 @@ function clear() {
         <div class="flex flex-col items-center mt-10">
             <h2>Last Rounds</h2>
             <div class="flex flex-col gap-y-4" v-if="gameStore.games.length > 0">
-                <RouterLink v-for="game in gameStore.games" :to="'/games/' + game.id">Round {{ game.id }}</RouterLink>
+                <RouterLink v-for="game in gameStore.games" :to="'/games/' + game.id">{{ game.isFinished ? `🏁 Round ${game.id} (finished)` : `Round ${game.id}` }}</RouterLink>
             </div>
             <div v-else>
                 <span>No rounds played yet</span>
