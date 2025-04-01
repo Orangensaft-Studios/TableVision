@@ -18,6 +18,10 @@ const props = defineProps({
         type: Number,
         required: false,
     },
+    clickable: {
+        type: Boolean,
+        default: true,
+    }
 });
 
 
@@ -27,15 +31,15 @@ const colors = ref([
     '#F3C439',
     '#1E4C87',
     '#DA4435',
-    '#E5748B',
     '#5F4B9A',
+    '#F9851D',
     '#3B6E45',
     '#A25128',
     '#000000'
 ]);
 
 const thisColor = computed(() => {
-    return colors.value[props.number < 9 ? props.number - 1 : props.number - 8];
+    return colors.value[props.number < 9 ? props.number - 1 : props.number - 9];
 });
 
 
@@ -60,8 +64,11 @@ const isHidden = computed(() => {
 </script>
 
 <template>
-    <button @click="playBall" :class="isHidden ? 'invisible' : ''"
-        class="hover:cursor-pointer rounded-full relative w-10 h-10">
+    <button @click="clickable ? playBall() : undefined" :class="{
+        'cursor-pointer': clickable,
+        'cursor-default': !clickable,
+        'invisible': isHidden
+    }" class="rounded-full relative w-7 h-7">
         <svg v-if="number === 0" id="Ebene_2_1" data-name="Ebene 2 1" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 324 324">
             <g id="Ebene_1-2_2" data-name="Ebene 1 2">
