@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
-import { useStorage } from '@vueuse/core'
+import { get, useStorage } from '@vueuse/core'
 
 export const useGameStore = defineStore('game', () => {
 
@@ -15,6 +15,7 @@ export const useGameStore = defineStore('game', () => {
         ...team,
         points: 0,
         isTurn: index === 0,
+        didWin: false,
         currentPlayerIndex: 0,
         ballType: undefined,
         balls: [],
@@ -30,28 +31,36 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function playedBall(gameID, teamIndex, ballType, number) {
+    if (!isGameActive(gameID)) {
+      return;
+    }
+
     if (!isAnyBallTypeSet(gameID)) {
       setTeamBallType(gameID, teamIndex, ballType)
     }
     const gameIndex = getGameIndex(gameID);
     const currentPlayerIndex = getCurrentPlayerIndex(gameID, teamIndex);
-    const teamBallType = getTeamBallType(gameID, teamIndex)
+    const teamBallType = getTeamBallType(gameID, teamIndex);
 
     if (number !== 8) {
       if (teamBallType === ballType) {
-        games.value[gameIndex].teams[teamIndex].points += 1
-        games.value[gameIndex].teams[teamIndex].usernames[currentPlayerIndex].points += 1
-        addBall(gameID, teamIndex, number)
+        games.value[gameIndex].teams[teamIndex].points += 1;
+        games.value[gameIndex].teams[teamIndex].usernames[currentPlayerIndex].points += 1;
+        addBall(gameID, teamIndex, number);
       } else {
-        const otherTeamID = teamIndex === 0 ? 1 : 0
-        games.value[gameIndex].teams[otherTeamID].points += 1
-        addBall(gameID, otherTeamID, number)
+        const otherTeamID = getOtherTeamIndex(teamIndex);
+        games.value[gameIndex].teams[otherTeamID].points += 1;
+        addBall(gameID, otherTeamID, number);
       }
     } else {
-      addBall(gameID, teamIndex, number)
+      addBall(gameID, teamIndex, number);
     }
-    
-    console.log('Did current team win:', didCurrentTeamWin(gameID, teamIndex, number))
+
+    didSomeoneWin(gameID, teamIndex, number);
+  }
+
+  function isGameActive(gameID) {
+    return getCurrentGame(gameID).isFinished === false;
   }
 
   function is8ValidPlay(gameID, teamIndex) {
@@ -70,9 +79,21 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
-  function didCurrentTeamWin(gameID, teamIndex, ball) {
+  function didSomeoneWin(gameID, teamIndex, ball) {
     if (ball === 8) {
-      return is8ValidPlay(gameID, teamIndex);
+      const isValid = is8ValidPlay(gameID, teamIndex);
+      const otherTeamIndex = getOtherTeamIndex(teamIndex);
+      const gameIndex = getGameIndex(gameID);
+      if (isValid) {
+        games.value[gameIndex].teams[teamIndex].didWin = true;
+      } else {
+        games.value[gameIndex].teams[otherTeamIndex].didWin = true;
+      }
+      games.value[gameIndex].teams[teamIndex].isTurn = false;
+      games.value[gameIndex].teams[otherTeamIndex].isTurn = false;
+      games.value[gameIndex].teams[teamIndex].didWin = true;
+      games.value[gameIndex].isFinished = true;
+      return true;
     }
 
     return false;
@@ -95,12 +116,11 @@ export const useGameStore = defineStore('game', () => {
 
   function setTeamBallType(gameID, teamIndex, ballType) {
     const gameIndex = getGameIndex(gameID);
-    games.value[gameIndex].teams[teamIndex].ballType = ballType
+    games.value[gameIndex].teams[teamIndex].ballType = ballType;
 
-    const otherTeamID = teamIndex === 0 ? 1 : 0
-    const otherBallType = ballType === 'solid' ? 'striped' : 'solid'
+    const otherBallType = ballType === 'solid' ? 'striped' : 'solid';
 
-    games.value[gameIndex].teams[otherTeamID].ballType = otherBallType
+    games.value[gameIndex].teams[getOtherTeamIndex(teamIndex)].ballType = otherBallType;
   }
 
   function switchTurns(gameID, teamIndex) {
@@ -145,7 +165,7 @@ export const useGameStore = defineStore('game', () => {
 
   function foul(gameID, teamIndex) {
     games.value[getGameIndex(gameID)].teams[teamIndex].usernames[getCurrentPlayerIndex(gameID, teamIndex)].fouls += 1
-    switchTurns(gameID, teamIndex === 0 ? 1 : 0);
+    switchTurns(gameID, getOtherTeamIndex(teamIndex));
   }
 
   function security(gameID, teamIndex) {
@@ -160,6 +180,10 @@ export const useGameStore = defineStore('game', () => {
     games.value = [];
   }
 
+  function getOtherTeamIndex(teamIndex) {
+    return teamIndex === 0 ? 1 : 0;
+  }
+
   function addBall(gameID, teamIndex, ball) {
     games.value[getGameIndex(gameID)].teams[teamIndex].balls.push(ball);
   }
@@ -172,5 +196,5 @@ export const useGameStore = defineStore('game', () => {
     return getCurrentGame(gameID).teams.some((team) => team.balls.includes(ball))
   }
 
-  return { startGame, playedBall, getCurrentPlayerName, getCurrentTeamIndex, getCurrentGame, foul, switchTurns, security, end, clear, addBall, getBalls, getBall, games }
+  return { startGame, playedBall, getCurrentPlayerName, getCurrentTeamIndex, getCurrentGame, foul, switchTurns, security, end, clear, addBall, getBalls, getBall, isGameActive, games }
 })

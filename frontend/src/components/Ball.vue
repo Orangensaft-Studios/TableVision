@@ -61,12 +61,19 @@ const isHidden = computed(() => {
         return gameStore.getBall(props.gameId, props.number);
     }
 })
+
+const isClickable = computed(() => {
+    if (props.gameId) {
+        return gameStore.isGameActive(props.gameId);
+    }
+    return props.clickable;
+})
 </script>
 
 <template>
-    <button @click="clickable ? playBall() : undefined" :class="{
-        'cursor-pointer': clickable,
-        'cursor-default': !clickable,
+    <button @click="isClickable ? playBall() : undefined" :class="{
+    'cursor-pointer': isClickable,
+    'cursor-default': !isClickable,
         'invisible': isHidden
     }" class="rounded-full relative w-7 h-7">
         <svg v-if="number === 0" id="Ebene_2_1" data-name="Ebene 2 1" xmlns="http://www.w3.org/2000/svg"
