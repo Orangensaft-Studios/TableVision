@@ -19,6 +19,8 @@ const team2Points = ref(0);
 const team1Balls = ref([]);
 const team2Balls = ref([]);
 
+const didCurrentPlayerPlay = ref(false);
+
 const visible = ref(false);
 
 onMounted(() => {
@@ -31,6 +33,7 @@ onMounted(() => {
                 team2Points.value = newGame.teams[1]?.points || 0;
                 team1Balls.value = gameStore.getBalls(id, 0) || [];
                 team2Balls.value = gameStore.getBalls(id, 1) || [];
+                didCurrentPlayerPlay.value = newGame.teams[gameStore.getCurrentTeamIndex(id)].currentPlayerPlayed;
             }
         },
         { immediate: true }
@@ -50,6 +53,10 @@ onMounted(() => {
 
     watch(() => gameStore.getBalls(id, 1), (newBalls) => {
         team2Balls.value = newBalls || [];
+    });
+
+    watch(() => gameStore.getCurrentGame(id)?.teams[gameStore.getCurrentTeamIndex(id)].currentPlayerPlayed, (newValue) => {
+        didCurrentPlayerPlay.value = newValue;
     });
 });
 
@@ -99,8 +106,8 @@ function endGame(route) {
         <div class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3 mt-5" v-if="!gameStore.getCurrentGame(id)?.isFinished">
             <Button label="Foul" severity="danger" @click="gameStore.foul(id, gameStore.getCurrentTeamIndex(id))" />
             <Button label="Security" severity="warning" />
-            <Button label="Next" severity="info"
-                @click="gameStore.switchTurns(id, gameStore.getCurrentTeamIndex(id))" />
+            <Button label="Next" severity="info" :disabled="!didCurrentPlayerPlay"
+                @click="gameStore.switchTurns(id, gameStore.getCurrentTeamIndex(id))" class="disabled:cursor-not-allowed"/>
             <Button label="End game" severity="contrast" class="self-end" @click="visible = true" />
         </div>
         <Dialog v-model:visible="visible" modal header="End game" :style="{ width: '25rem' }">
