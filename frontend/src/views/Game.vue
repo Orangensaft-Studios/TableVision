@@ -1,160 +1,169 @@
 <script setup>
-import * as THREE from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { DragControls } from 'three/examples/jsm/controls/DragControls'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import Header from '@/components/Header.vue'
+import FakeBillardTable from '@/components/FakeBillardTable.vue'
+import Button from 'primevue/button'
+import { useGameStore } from '@/stores/game'
+import { onMounted, watch, ref } from 'vue'
+import Ball from '@/components/Ball.vue'
+import Dialog from 'primevue/dialog'
+import { useRoute, useRouter } from 'vue-router'
 
-let scene, camera, renderer, dragControls, orbitControls
-let billiardTable, billiardBall
-const objects = []
-const holePositions = [
-  // Example hole positions
-  new THREE.Vector3(-1.5, 0.25, -0.85),
-  new THREE.Vector3(1.1, 0, -2.0),
-  new THREE.Vector3(-1.1, 0, 2.0),
-  new THREE.Vector3(1.1, 0, 2.0),
-  new THREE.Vector3(0, 0, -2.0),
-  new THREE.Vector3(0, 0, 2.0),
-]
-const holeRadius = 0.2 // Adjust based on your model
-const ballFiles = Array.from({ length: 15 }, (_, i) => `/billiardBall${i + 1}.glb`)
+const router = useRouter()
+const route = useRoute()
+const gameStore = useGameStore()
+const id = Number(route.params.id)
 
-function init() {
-  // Scene
-  scene = new THREE.Scene()
-  scene.background = new THREE.Color(0x82dbc5)
+const team1Points = ref(0)
+const team2Points = ref(0)
 
-  // Camera
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
-  camera.position.set(0, 3, 5)
-  camera.lookAt(0, 0, 0)
+const team1Balls = ref([])
+const team2Balls = ref([])
 
-  // Renderer
-  renderer = new THREE.WebGLRenderer({
-    powerPreference: 'low-power', // Uses less GPU
-    antialias: false,
-    alpha: false,
-    preserveDrawingBuffer: false, // Avoids storing unnecessary data
-  })
-  renderer.setSize(window.innerWidth, window.innerHeight)
-  document.body.appendChild(renderer.domElement)
+const didCurrentPlayerPlay = ref(false)
 
-  // Lights
-  const ambientLight = new THREE.AmbientLight(0xffffff, 2.5)
-  scene.add(ambientLight)
+const visible = ref(false)
 
-  const loader = new GLTFLoader()
-  const loader2 = new GLTFLoader()
-  const dracoLoader = new DRACOLoader()
-  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/')
-  loader2.setDRACOLoader(dracoLoader)
+onMounted(() => {
+  watch(
+    () => gameStore.getCurrentGame(id),
+    (newGame) => {
+      if (newGame && newGame.teams) {
+        team1Points.value = newGame.teams[0]?.points || 0
+        team2Points.value = newGame.teams[1]?.points || 0
+        team1Balls.value = gameStore.getBalls(id, 0) || []
+        team2Balls.value = gameStore.getBalls(id, 1) || []
+        didCurrentPlayerPlay.value =
+          newGame.teams[gameStore.getCurrentTeamIndex(id)].currentPlayerPlayed
+      }
+    },
+    { immediate: true },
+  )
 
-  // Load Billiard Table
-  loader.load('/billiardTable.glb', (gltf) => {
-    billiardTable = gltf.scene
-    billiardTable.scale.set(0.2, 0.2, 0.2)
-    scene.add(billiardTable)
-  })
+  watch(
+    () => gameStore.getCurrentGame(id)?.teams[0]?.points,
+    (newPoints) => {
+      team1Points.value = newPoints || 0
+    },
+  )
 
-  // Load Billiard Ball
-  const startX = 0 // Center on table
-  const startZ = -0.5 // Adjust Z to position near breaking area
-  const ballSpacing = 0.22 // Adjusted for proper ball touching
+  watch(
+    () => gameStore.getCurrentGame(id)?.teams[1]?.points,
+    (newPoints) => {
+      team2Points.value = newPoints || 0
+    },
+  )
 
-  let count = 0
+  watch(
+    () => gameStore.getBalls(id, 0),
+    (newBalls) => {
+      team1Balls.value = newBalls || []
+    },
+  )
 
-  // Loop through each row (5 total rows)
-  for (let row = 0; row < 5; row++) {
-    for (let col = 0; col <= row; col++) {
-      let ballZStart = (ballSpacing / 2) * row
-      loader2.load(ballFiles[count], (gltf) => {
-        const newBall = gltf.scene
-        newBall.scale.set(0.2, 0.2, 0.2)
+  watch(
+    () => gameStore.getBalls(id, 1),
+    (newBalls) => {
+      team2Balls.value = newBalls || []
+    },
+  )
 
-        // Triangle formation formula
-        newBall.position.set(startZ, 0, startX)
-
-        ballZStart -= ballSpacing
-
-        scene.add(newBall)
-        objects.push(newBall)
-
-        // Activate DragControls after all balls are loaded
-        if (objects.length === 15) {
-          dragControls = new DragControls(objects, camera, renderer.domElement)
-          dragControls.addEventListener('drag', (event) => {
-            event.object.position.y = 1 // Lock dragging to XZ plane
-          })
-        }
-      })
-
-      count++
-      if (count >= 15) break // Stop if all 15 balls are placed
-    }
-  }
-
-  // Orbit Controls
-  orbitControls = new OrbitControls(camera, renderer.domElement)
-
-  // Drag Controls (Enabled after ball loads)
-  dragControls = new DragControls(objects, camera, renderer.domElement)
-  dragControls.addEventListener('dragstart', (event) => {
-    event.object.material.emissive = new THREE.Color(0xaaaaaa)
-    orbitControls.enabled = false // Disable OrbitControls while dragging
-  })
-
-  dragControls.addEventListener('dragend', (event) => {
-    event.object.material.emissive = new THREE.Color(0x000000)
-    orbitControls.enabled = true // Re-enable OrbitControls after dragging
-  })
-  dragControls.addEventListener('drag', (event) => {
-    event.object.position.y = 1
-    checkIfOverHole(event.object)
-  })
-
-  animate()
-}
-
-// ✅ Function to check if the ball is over a hole
-function checkIfOverHole(ball) {
-  const ballPosition = new THREE.Vector3()
-  ball.getWorldPosition(ballPosition)
-
-  holePositions.forEach((holePos) => {
-    const distance = ballPosition.distanceTo(holePos)
-    console.log(distance)
-    console.log(ballPosition)
-    console.log(holePos)
-    if (distance < holeRadius) {
-      console.log('Ball is over a hole!')
-      handleBallInHole(ball)
-    }
-  })
-}
-
-// ✅ Function to handle ball falling in hole
-function handleBallInHole() {
-  scene.remove(billiardBall)
-  console.log('Ball fell in the hole!')
-}
-
-// Animation Loop
-function animate() {
-  requestAnimationFrame(animate)
-  renderer.render(scene, camera)
-}
-
-// Handle window resizing
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight
-  camera.updateProjectionMatrix()
-  renderer.setSize(window.innerWidth, window.innerHeight)
+  watch(
+    () =>
+      gameStore.getCurrentGame(id)?.teams[gameStore.getCurrentTeamIndex(id)].currentPlayerPlayed,
+    (newValue) => {
+      didCurrentPlayerPlay.value = newValue
+    },
+  )
 })
 
-init()
+function endGame(route) {
+  visible.value = false
+  gameStore.end(id)
+  router.push({ name: route })
+}
 </script>
 
 <template>
-  <div></div>
+  <div class="flex flex-col items-center h-full mx-[20vw]">
+    <Header
+      ><template #action><!--statsbutton--></template></Header
+    >
+    <div class="flex flex-col mx-4 mb-2 w-full text-xl">
+      <!-- Teams -->
+      <div v-if="gameStore.getCurrentGame(id)?.teams?.length >= 2" class="flex justify-between">
+        <span class="text-slate-600">Team {{ gameStore.getCurrentGame(id).teams[0].name }}</span>
+        <div class="text-2xl flex gap-x-2">
+          <div>
+            <Ball
+              v-for="ball in team1Balls"
+              :key="ball"
+              :number="ball"
+              class="w-7"
+              :clickable="false"
+            />
+          </div>
+          <span>{{ team1Points }}:{{ team2Points }}</span>
+          <div>
+            <Ball
+              v-for="ball in team2Balls"
+              :key="ball"
+              :number="ball"
+              class="w-7"
+              :clickable="false"
+            />
+          </div>
+        </div>
+        <span class="text-slate-600 text-end"
+          >Team {{ gameStore.getCurrentGame(id).teams[1].name }}</span
+        >
+      </div>
+
+      <div class="flex justify-between">
+        <span
+          class="text-3xl"
+          :class="gameStore.getCurrentGame(id).teams[0].isTurn ? 'font-bold' : ''"
+          >{{ gameStore.getCurrentPlayerName(id, 0) }}</span
+        >
+        <span
+          class="text-3xl"
+          :class="gameStore.getCurrentGame(id).teams[1].isTurn ? 'font-bold' : ''"
+          >{{ gameStore.getCurrentPlayerName(id, 1) }}</span
+        >
+      </div>
+    </div>
+    <div class="w-[50vw] h-[60vh]">
+      <!--Place Billard table here-->
+      <FakeBillardTable :current-team-id="gameStore.getCurrentTeamIndex(id)" :game-id="id" />
+    </div>
+
+    <div
+      class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3 mt-5"
+      v-if="!gameStore.getCurrentGame(id)?.isFinished"
+    >
+      <Button
+        label="Foul"
+        severity="danger"
+        @click="gameStore.foul(id, gameStore.getCurrentTeamIndex(id))"
+      />
+      <Button label="Security" severity="warning" />
+      <Button
+        label="Next"
+        severity="info"
+        :disabled="!didCurrentPlayerPlay"
+        @click="gameStore.switchTurns(id, gameStore.getCurrentTeamIndex(id))"
+        class="disabled:cursor-not-allowed"
+      />
+      <Button label="End game" severity="contrast" class="self-end" @click="visible = true" />
+    </div>
+    <Dialog v-model:visible="visible" modal header="End game" :style="{ width: '25rem' }">
+      <span class="p-text-secondary block mb-5"
+        >This action will end the current game! Don't worry, your game data is saved.</span
+      >
+      <div class="flex justify-content-end gap-2">
+        <Button type="button" label="Show stats" @click="endGame('stats')"></Button>
+        <Button type="button" label="Start new game" @click="endGame('new')"></Button>
+        <Button type="button" label="Exit to menu" @click="endGame('home')"></Button>
+      </div>
+    </Dialog>
+  </div>
 </template>
