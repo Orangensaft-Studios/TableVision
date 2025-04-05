@@ -7,7 +7,7 @@ const game = useGameStore();
 const teams = ref([]);
 
 function updateTeam(usernames, teamName, teamID) {
-    teams.value[teamID] = { username: usernames, team: teamName }
+    teams.value[teamID] = { usernames: usernames, name: teamName }
 }
 
 function start() {
@@ -29,8 +29,7 @@ function start() {
             </div>
             <div class="mt-10 flex justify-center">
                 <button type="submit"
-                    class="px-3 py-2 bg-green-600 hover:bg-green-500 rounded-xl hover:cursor-pointer">Start
-                    game</button>
+                    class="px-3 py-2 bg-green-600 hover:bg-green-500 rounded-xl hover:cursor-pointer">Start game</button>
             </div>
         </form>
     </div>

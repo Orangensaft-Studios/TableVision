@@ -1,8 +1,5 @@
 <script setup>
-import { defineModel } from 'vue';
-
 const username = defineModel();
-
 </script>
 
 <template>
