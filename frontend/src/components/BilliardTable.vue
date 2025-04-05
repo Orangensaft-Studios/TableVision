@@ -1,19 +1,26 @@
 <script setup>
-import { onMounted, onBeforeUnmount, watch } from 'vue'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { DragControls } from 'three/examples/jsm/controls/DragControls'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { onMounted, onBeforeUnmount, watch } from 'vue'
+import { useGameStore } from '@/stores/game'
 
 const props = defineProps({
   currentTeamId: Number,
   gameId: Number,
 })
 
+watch
+
+const gameStore = useGameStore()
+
 let scene, camera, renderer, dragControls, orbitControls
-const objects = []
+let billiardTable, billiardBall
 let animationFrameId = null
+
+let ballsInHole = []
 
 onMounted(() => {
   init()
@@ -26,73 +33,159 @@ onBeforeUnmount(() => {
   cancelAnimationFrame(animationFrameId)
 })
 
+const objects = []
+const holePositions = [
+  { position: new THREE.Vector3(-1.5, 0.2, -0.85), name: 'Top Left' },
+  { position: new THREE.Vector3(0.125, 0.2, -0.898), name: 'Top Center' },
+  { position: new THREE.Vector3(1.83, 0.2, -0.85), name: 'Top Right' },
+  { position: new THREE.Vector3(1.85, 0.2, 0.89), name: 'Bottom Right' },
+  { position: new THREE.Vector3(0.125, 0.2, 0.943), name: 'Bottom Center' },
+  { position: new THREE.Vector3(-1.58, 0.2, 0.89), name: 'Bottom Left' },
+]
+const holeRadius = 0.13 // Adjust based on your model
+const ballFiles = Array.from({ length: 15 }, (_, i) => `/billiardBall${i + 1}.glb`)
+
 function init() {
   const container = document.getElementById('billiard-scene')
+  // Scene
   scene = new THREE.Scene()
   scene.background = new THREE.Color(0x82dbc5)
 
-  camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 100)
-  camera.position.set(0, 3, 5)
+  // Camera
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
+  camera.position.set(0, 2, 0)
   camera.lookAt(0, 0, 0)
 
-  renderer = new THREE.WebGLRenderer({ antialias: true })
+  // Renderer
+  renderer = new THREE.WebGLRenderer({
+    powerPreference: 'low-power', // Uses less GPU
+    antialias: false,
+    alpha: false,
+    preserveDrawingBuffer: false, // Avoids storing unnecessary data
+  })
   renderer.setSize(container.clientWidth, container.clientHeight)
   container.appendChild(renderer.domElement)
 
+  // Lights
   const ambientLight = new THREE.AmbientLight(0xffffff, 2.5)
   scene.add(ambientLight)
 
   const loader = new GLTFLoader()
+  const loader2 = new GLTFLoader()
   const dracoLoader = new DRACOLoader()
   dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/')
-  loader.setDRACOLoader(dracoLoader)
+  loader2.setDRACOLoader(dracoLoader)
 
-  // Load Table
+  // Load Billiard Table
   loader.load('/billiardTable.glb', (gltf) => {
-    const table = gltf.scene
-    table.scale.set(0.2, 0.2, 0.2)
-    scene.add(table)
+    billiardTable = gltf.scene
+    billiardTable.scale.set(0.2, 0.2, 0.2)
+    scene.add(billiardTable)
   })
 
-  // Load Balls (example only)
-  const ballFiles = Array.from({ length: 15 }, (_, i) => `/billiardBall${i + 1}.glb`)
-  const ballSpacing = 0.22
+  // Load Billiard Ball
+  const startX = 0 // Center on table
+  const startZ = 0 // Adjust Z to position near breaking area
+  const ballSpacing = 0.22 // Adjusted for proper ball touching
+
   let count = 0
 
+  // Loop through each row (5 total rows)
   for (let row = 0; row < 5; row++) {
     for (let col = 0; col <= row; col++) {
       const thisCount = count
-      loader.load(ballFiles[thisCount], (gltf) => {
-        const ball = gltf.scene
-        ball.scale.set(0.2, 0.2, 0.2)
-        const x = row * ballSpacing - ballSpacing * 2
-        const z = (col - row / 2) * ballSpacing
-        ball.position.set(x, 0, z)
+      let ballZStart = (ballSpacing / 2) * row
+      loader2.load(ballFiles[count], (gltf) => {
+        const newBall = gltf.scene
+        newBall.scale.set(0.2, 0.2, 0.2)
 
-        ball.userData = {
+        // Triangle formation formula
+        newBall.position.set(startZ, 0, startX)
+
+        ballZStart -= ballSpacing
+
+        let ballType
+        if (thisCount === 8) {
+          ballType = 'black'
+        }
+        ballType = thisCount > 8 ? 'striped' : 'solid'
+
+        newBall.userData = {
           id: thisCount + 1,
-          type: thisCount === 0 ? 'cue' : 'normal',
+          ballType: ballType,
         }
 
-        scene.add(ball)
-        objects.push(ball)
+        console.log(newBall)
 
+        scene.add(newBall)
+        objects.push(newBall)
+
+        // Activate DragControls after all balls are loaded
         if (objects.length === 15) {
+          console.log(objects)
           dragControls = new DragControls(objects, camera, renderer.domElement)
           dragControls.addEventListener('drag', (event) => {
-            event.object.position.y = 1
+            event.object.position.y = 1 // Lock dragging to XZ plane
           })
         }
       })
+
       count++
+      if (count >= 15) break // Stop if all 15 balls are placed
     }
   }
 
+  // Orbit Controls
   orbitControls = new OrbitControls(camera, renderer.domElement)
+
+  // Drag Controls (Enabled after ball loads)
+  dragControls = new DragControls(objects, camera, renderer.domElement)
+  dragControls.addEventListener('dragstart', (event) => {
+    event.object.material.emissive = new THREE.Color(0xaaaaaa)
+    orbitControls.enabled = false // Disable OrbitControls while dragging
+  })
+
+  dragControls.addEventListener('dragend', (event) => {
+    event.object.material.emissive = new THREE.Color(0x000000)
+    orbitControls.enabled = true // Re-enable OrbitControls after dragging
+  })
+  dragControls.addEventListener('drag', (event) => {
+    event.object.position.y = 1
+    checkIfOverHole(event.object)
+  })
 
   animate()
 }
 
+function checkIfOverHole(ball) {
+  const removeObjectID = objects.findIndex((x) => x.uuid === ball.parent.uuid)
+  if (!ballsInHole.includes(objects[removeObjectID].userData.id)) {
+    const ballPosition = new THREE.Vector3()
+    ball.getWorldPosition(ballPosition)
+
+    holePositions.forEach(({ position, name }) => {
+      const distance = ballPosition.distanceTo(position)
+      if (distance < holeRadius) {
+        console.log(`Ball is over hole: ${name}`)
+
+        console.log(objects[removeObjectID].userData)
+        ballsInHole.push(objects[removeObjectID].userData.id)
+        handleBallInHole(removeObjectID, name)
+      }
+    })
+  }
+}
+
+function handleBallInHole(removeObjectID, holeName) {
+  scene.remove(objects[removeObjectID])
+  const ballData = objects[removeObjectID].userData
+  console.log(props.currentTeamId)
+  gameStore.playedBall(props.gameId, props.currentTeamId, ballData.ballType, ballData.id)
+
+  console.log(`Ball fell into ${holeName}`)
+}
+
+// Animation Loop
 function animate() {
   animationFrameId = requestAnimationFrame(animate)
   renderer.render(scene, camera)

@@ -7,6 +7,7 @@ import { onMounted, watch, ref } from 'vue'
 import Ball from '@/components/Ball.vue'
 import Dialog from 'primevue/dialog'
 import { useRoute, useRouter } from 'vue-router'
+import BilliardTable from '@/components/BilliardTable.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -18,6 +19,8 @@ const team2Points = ref(0)
 
 const team1Balls = ref([])
 const team2Balls = ref([])
+
+const threeDTableVisible = ref(false)
 
 const didCurrentPlayerPlay = ref(false)
 
@@ -81,6 +84,11 @@ function endGame(route) {
   gameStore.end(id)
   router.push({ name: route })
 }
+
+function toggleView() {
+  threeDTableVisible.value = !threeDTableVisible.value
+  console.log(threeDTableVisible.value)
+}
 </script>
 
 <template>
@@ -124,6 +132,19 @@ function endGame(route) {
           :class="gameStore.getCurrentGame(id).teams[0].isTurn ? 'font-bold' : ''"
           >{{ gameStore.getCurrentPlayerName(id, 0) }}</span
         >
+        <div class="flex items-center justify-end px-4 mt-2">
+          <span class="text-sm font-medium mr-3 text-gray-700">2D</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only peer" v-model="threeDTableVisible" />
+            <div
+              class="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:bg-emerald-500 transition-all duration-300 ease-in-out"
+            ></div>
+            <div
+              class="absolute left-1 top-1 bg-white w-6 h-6 rounded-full shadow-md transform transition-all duration-300 ease-in-out peer-checked:translate-x-6"
+            ></div>
+          </label>
+          <span class="text-sm font-medium ml-3 text-gray-700">3D</span>
+        </div>
         <span
           class="text-3xl"
           :class="gameStore.getCurrentGame(id).teams[1].isTurn ? 'font-bold' : ''"
@@ -132,8 +153,18 @@ function endGame(route) {
       </div>
     </div>
     <div class="w-[50vw] h-[60vh]">
-      <!--Place Billard table here-->
-      <FakeBillardTable :current-team-id="gameStore.getCurrentTeamIndex(id)" :game-id="id" />
+      <FakeBillardTable
+        v-if="!threeDTableVisible"
+        :current-team-id="gameStore.getCurrentTeamIndex(id)"
+        :game-id="id"
+      />
+
+      <BilliardTable
+        v-else
+        :current-team-id="gameStore.getCurrentTeamIndex(id)"
+        :game-id="id"
+        class="w-full h-full block"
+      />
     </div>
 
     <div
