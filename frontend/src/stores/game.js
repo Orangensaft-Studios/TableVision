@@ -207,6 +207,7 @@ export const useGameStore = defineStore('game', () => {
   function getStatsPerTeam(gameID) {
     const game = getCurrentGame(gameID);
     return game.teams.map((team) => ({
+      name: team.name,
       fouls: getFoulsPerTeam(team),
       points: team.points,
       balls: team.balls,

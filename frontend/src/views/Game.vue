@@ -24,7 +24,7 @@ const didCurrentPlayerPlay = ref(false);
 const visible = ref(false);
 
 onMounted(() => {
-    
+
     watch(
         () => gameStore.getCurrentGame(id),
         (newGame) => {
@@ -38,7 +38,7 @@ onMounted(() => {
         },
         { immediate: true }
     );
-    
+
     watch(() => gameStore.getCurrentGame(id)?.teams[0]?.points, (newPoints) => {
         team1Points.value = newPoints || 0;
     });
@@ -70,17 +70,21 @@ function endGame(route) {
 
 <template>
     <div class="flex flex-col items-center h-full mx-[20vw]">
-        <Header><template #action><!--statsbutton--></template></Header>
-        <div class="flex flex-col mx-4 mb-2 w-full text-xl">
-            <!-- Teams -->
-            <div v-if="gameStore.getCurrentGame(id)?.teams?.length >= 2" class="flex justify-between">
+        <Header><template #action> <button @click="router.push({ name: 'stats', params: { id: gameID } })"
+                    class="px-5 py-2 hover:cursor-pointer bg-green-600 text-white rounded-sm hover:bg-green-500">
+                    Show stats
+                </button></template>
+        </Header>
+        <div class="flex flex-col mx-4 mb-6 w-full text-xl">
+            <div v-if="gameStore.getCurrentGame(id)?.teams?.length >= 2"
+                class="flex items-center justify-between mt-3 gap-x-1">
                 <span class=" text-slate-600">Team {{ gameStore.getCurrentGame(id).teams[0].name }}</span>
-                <div class="text-2xl flex gap-x-2">
-                    <div>
+                <div class="text-2xl flex gap-x-2 items-center">
+                    <div class="hidden sm:!flex sm:flex-wrap sm:items-center">
                         <Ball v-for="ball in team1Balls" :key="ball" :number="ball" class="w-7" :clickable="false" />
                     </div>
-                    <span>{{ team1Points }}:{{team2Points }}</span>
-                    <div>
+                    <span class="flex items-center">{{ team1Points }}:{{ team2Points }}</span>
+                    <div class="hidden sm:!flex sm:flex-wrap sm:items-center">
                         <Ball v-for="ball in team2Balls" :key="ball" :number="ball" class="w-7" :clickable="false" />
                     </div>
                 </div>
@@ -99,20 +103,23 @@ function endGame(route) {
 
         </div>
         <div class="w-[50vw] h-[60vh]">
-            <!--Place Billard table here-->
             <FakeBillardTable :current-team-id="gameStore.getCurrentTeamIndex(id)" :game-id="id" />
         </div>
 
         <div class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3 mt-5" v-if="!gameStore.getCurrentGame(id)?.isFinished">
             <Button label="Foul" severity="danger" @click="gameStore.foul(id, gameStore.getCurrentTeamIndex(id))" />
-            <Button label="Security" severity="warning" />
-            <Button label="Next" severity="info" :disabled="!didCurrentPlayerPlay"
-                @click="gameStore.switchTurns(id, gameStore.getCurrentTeamIndex(id))" class="disabled:cursor-not-allowed"/>
+            <Button label="Next" severity="info" @click="gameStore.switchTurns(id, gameStore.getCurrentTeamIndex(id))"
+                class="disabled:cursor-not-allowed" />
             <Button label="End game" severity="contrast" class="self-end" @click="visible = true" />
         </div>
+        <div class="mt-6">
+            <Button label="Return to home" severity="contrast" class="self-end"
+                @click="router.push({ name: 'home' })" />
+        </div>
         <Dialog v-model:visible="visible" modal header="End game" :style="{ width: '25rem' }">
-            <span class="p-text-secondary block mb-5">This action will end the current game! Don't worry, your game data is saved.</span>
-            <div class="flex justify-content-end gap-2" >
+            <span class="p-text-secondary block mb-5">This action will end the current game! Don't worry, your game data
+                is saved.</span>
+            <div class="flex justify-content-end gap-2">
                 <Button type="button" label="Show stats" @click="endGame('stats')"></Button>
                 <Button type="button" label="Start new game" @click="endGame('new')"></Button>
                 <Button type="button" label="Exit to menu" @click="endGame('home')"></Button>

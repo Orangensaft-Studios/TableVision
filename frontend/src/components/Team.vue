@@ -34,6 +34,7 @@ watch(usernames, (newUsernames) => {
 <template>
     <div class="flex flex-col gap-y-1">
         <TeamInput v-model="teamName" />
+        <hr class="border-green-900 border-2 mt-2" />
         <VueDraggable ref="el" v-model="usernames" target=".sort-target">
             <transition-group type="transition" tag="ul" name="fade" class="sort-target">
                 <li v-for="(username, index) in usernames" :key="index">
@@ -42,10 +43,14 @@ watch(usernames, (newUsernames) => {
             </transition-group>
         </VueDraggable>
         <div class="flex justify-between px-5 pt-2">
-            <button type="button" @click="addUser" class="mt-1 hover:opacity-60 cursor-pointer"><i
-                    class="pi pi-plus"></i></button>
-            <button type="button" @click="removeUser" class="mt-1 hover:opacity-60 cursor-pointer"><i
-                    class="pi pi-minus"></i></button>
+            <button type="button" @click="addUser"
+                class="mt-1 bg-green-600 text-white rounded-sm p-2 hover:bg-green-500 focus:outline-none hover:cursor-pointer size-6 flex items-center justify-center">
+                <i class="pi pi-plus"></i>
+            </button>
+            <button type="button" @click="removeUser"
+                class="mt-1 bg-red-600 text-white rounded-sm p-2 hover:bg-red-500 focus:outline-none hover:cursor-pointer size-6 flex items-center justify-center">
+                <i class="pi pi-minus"></i>
+            </button>
         </div>
     </div>
 </template>
