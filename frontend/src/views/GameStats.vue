@@ -40,12 +40,18 @@ const stats = computed(() => gameStore.getStatsPerTeam(gameID))
                     Team {{ team.name }} <span v-if="team.ballType" class="text-base text-green-600">({{ team.ballType
                         }})</span>
                 </h2>
-                <div class="mt-4 grid grid-cols-2 gap-y-2">
-                    <p class="text-lg">Points:</p>
-                    <p class="text-lg font-medium">{{ team.points }}</p>
-                    <p class="text-lg">Fouls:</p>
-                    <p class="text-lg font-medium">{{ team.fouls }}</p>
-                </div>
+                <table class="mt-4 w-64 text-md">
+                    <tbody>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-2 font-bold">Points</td>
+                            <td class="py-2 font-medium">{{ team.points }}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 font-bold">Fouls</td>
+                            <td class="py-2 font-medium">{{ team.fouls }}</td>
+                        </tr>
+                    </tbody>
+                </table>
                 <div class="mt-4">
                     <h3 class="font-semibold text-lg">Players:</h3>
                     <table class="w-full mt-2 text-sm">
@@ -77,7 +83,6 @@ const stats = computed(() => gameStore.getStatsPerTeam(gameID))
             </div>
         </div>
 
-        <!-- Navigation Button -->
         <div class="flex justify-center mt-10">
             <button @click="router.push({name: 'games', params: { id: gameID }})"
                 class="px-5 py-2 hover:cursor-pointer bg-green-600 text-white rounded-sm hover:bg-green-500">
