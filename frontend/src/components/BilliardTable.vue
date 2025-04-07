@@ -16,9 +16,13 @@ defineExpose({
   dispose,
 })
 
-watch
-
 const gameStore = useGameStore()
+
+watch(gameStore.getCurrentGame(props.gameId)?.isFinished, (val) => {
+  if (val) {
+    if (dragControls) dragControls.dispose?.()
+  }
+})
 
 let scene, camera, renderer, dragControls, orbitControls
 let billiardTable, billiardBall
@@ -158,10 +162,8 @@ function init() {
     orbitControls.enabled = true // Re-enable OrbitControls after dragging
   })
   dragControls.addEventListener('drag', (event) => {
-    if (!gameStore.getCurrentGame(id)?.isFinished) {
-      event.object.position.y = 1
-      checkIfOverHole(event.object)
-    }
+    event.object.position.y = 1
+    checkIfOverHole(event.object)
   })
 
   animate()
