@@ -32,6 +32,13 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function playedBall(gameID, teamIndex, ballType, number) {
+    console.log(`Played ball ${number} of type ${ballType} for team ${teamIndex}`);
+
+    if (number === 0) {
+      foul(gameID, teamIndex);
+      return;
+    }  
+    
     if (!isGameActive(gameID)) {
       return;
     }
@@ -98,7 +105,6 @@ export const useGameStore = defineStore('game', () => {
       }
       games.value[gameIndex].teams[teamIndex].isTurn = false;
       games.value[gameIndex].teams[otherTeamIndex].isTurn = false;
-      games.value[gameIndex].teams[teamIndex].didWin = true;
       games.value[gameIndex].isFinished = true;
       return true;
     }
@@ -207,6 +213,7 @@ export const useGameStore = defineStore('game', () => {
   function getStatsPerTeam(gameID) {
     const game = getCurrentGame(gameID);
     return game.teams.map((team) => ({
+      name: team.name,
       fouls: getFoulsPerTeam(team),
       points: team.points,
       balls: team.balls,

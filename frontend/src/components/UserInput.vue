@@ -7,6 +7,6 @@ const username = defineModel();
         <InputGroupAddon>
             <i class="pi pi-user"></i>
         </InputGroupAddon>
-        <InputText placeholder="Username" v-model="username" required />
+        <InputText placeholder="Player name" v-model="username" required />
     </InputGroup>
 </template>
