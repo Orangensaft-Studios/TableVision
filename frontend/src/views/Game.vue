@@ -94,13 +94,14 @@ function toggleView() {
                 </button></template>
         </Header>
         <div class="flex flex-col mx-4 mb-6 w-full text-xl">
-            <div v-if="gameStore.getCurrentGame(id)?.isFinished" class="bg-gray-200 py-1 text-center text-red-500 font-bold rounded mb-2">
+            <div v-if="gameStore.getCurrentGame(id)?.isFinished"
+                class="bg-gray-200 py-1 text-center text-red-500 font-bold rounded mb-2">
                 Game Finished
             </div>
             <div v-if="gameStore.getCurrentGame(id)?.teams?.length >= 2" class="mt-3">
                 <div class="flex justify-between items-center">
                     <span class="text-slate-600">Team {{ gameStore.getCurrentGame(id).teams[0].name }}</span>
-                    <span class="text-slate-600">Team {{ gameStore.getCurrentGame(id).teams[1].name }}</span>
+                    <span class="text-slate-600 text-right">Team {{ gameStore.getCurrentGame(id).teams[1].name }}</span>
                 </div>
                 <div class="my-2 text-2xl font-bold flex justify-center">
                     <span>{{ team1Points }}:{{ team2Points }}</span>
@@ -108,23 +109,10 @@ function toggleView() {
                 <div class="flex justify-between">
                     <span class="text-3xl" :class="gameStore.getCurrentGame(id).teams[0].isTurn ? 'font-bold' : ''">{{
                         gameStore.getCurrentPlayerName(id, 0) }}</span>
-                    <div class="flex items-center justify-end px-4 mt-2">
-                        <span class="text-sm font-medium mr-3 text-gray-700">2D</span>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer" v-model="threeDTableVisible" />
-                            <div
-                                class="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:bg-emerald-500 transition-all duration-300 ease-in-out">
-                            </div>
-                            <div
-                                class="absolute left-1 top-1 bg-white w-6 h-6 rounded-full shadow-md transform transition-all duration-300 ease-in-out peer-checked:translate-x-6">
-                            </div>
-                        </label>
-                        <span class="text-sm font-medium ml-3 text-gray-700">3D</span>
-                    </div>
+
                     <span class="text-3xl" :class="gameStore.getCurrentGame(id).teams[1].isTurn ? 'font-bold' : ''">{{
                         gameStore.getCurrentPlayerName(id, 1) }}</span>
                 </div>
-                <!-- Balls Row (Visible on large screens, swapped position) -->
                 <div class="hidden sm:flex justify-between items-center">
                     <div class="flex gap-x-2 items-center">
                         <Ball v-for="ball in team1Balls" :key="ball" :number="ball" class="w-7" :clickable="false" />
@@ -132,6 +120,19 @@ function toggleView() {
                     <div class="flex gap-x-2 items-center">
                         <Ball v-for="ball in team2Balls" :key="ball" :number="ball" class="w-7" :clickable="false" />
                     </div>
+                </div>
+                <div class="flex items-center justify-end px-4 mt-2">
+                    <span class="text-sm font-medium mr-3 text-gray-700">2D</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" v-model="threeDTableVisible" />
+                        <div
+                            class="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:bg-emerald-500 transition-all duration-300 ease-in-out">
+                        </div>
+                        <div
+                            class="absolute left-1 top-1 bg-white w-6 h-6 rounded-full shadow-md transform transition-all duration-300 ease-in-out peer-checked:translate-x-6">
+                        </div>
+                    </label>
+                    <span class="text-sm font-medium ml-3 text-gray-700">3D</span>
                 </div>
             </div>
         </div>

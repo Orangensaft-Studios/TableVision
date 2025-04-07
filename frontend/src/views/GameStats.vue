@@ -40,7 +40,7 @@ const stats = computed(() => gameStore.getStatsPerTeam(gameID))
                     Team {{ team.name }} <span v-if="team.ballType" class="text-base text-green-600">({{ team.ballType
                         }})</span>
                 </h2>
-                <table class="mt-4 w-64 text-md">
+                <table class="mt-4 min-w-32 text-md">
                     <tbody>
                         <tr class="border-b border-gray-200">
                             <td class="py-2 font-bold">Points</td>
