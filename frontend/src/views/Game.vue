@@ -13,6 +13,7 @@ const router = useRouter()
 const route = useRoute()
 const gameStore = useGameStore()
 const id = Number(route.params.id)
+const billiardRef = ref(null)
 
 const team1Points = ref(0)
 const team2Points = ref(0)
@@ -25,6 +26,12 @@ const threeDTableVisible = ref(false)
 const didCurrentPlayerPlay = ref(false)
 
 const visible = ref(false)
+
+watch(threeDTableVisible, (val) => {
+  if (!val && billiardRef.value) {
+    billiardRef.value.dispose()
+  }
+})
 
 onMounted(() => {
   watch(
@@ -161,6 +168,7 @@ function toggleView() {
 
       <BilliardTable
         v-else
+        ref="billiardRef"
         :current-team-id="gameStore.getCurrentTeamIndex(id)"
         :game-id="id"
         class="w-full h-full block"

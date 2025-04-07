@@ -4,12 +4,16 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import { DragControls } from 'three/examples/jsm/controls/DragControls'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { onMounted, onBeforeUnmount, watch } from 'vue'
+import { onMounted, onBeforeUnmount, watch, computed } from 'vue'
 import { useGameStore } from '@/stores/game'
 
 const props = defineProps({
   currentTeamId: Number,
   gameId: Number,
+})
+
+defineExpose({
+  dispose,
 })
 
 watch
@@ -58,10 +62,8 @@ function init() {
 
   // Renderer
   renderer = new THREE.WebGLRenderer({
-    powerPreference: 'low-power', // Uses less GPU
     antialias: false,
     alpha: false,
-    preserveDrawingBuffer: false, // Avoids storing unnecessary data
   })
   renderer.setSize(container.clientWidth, container.clientHeight)
   container.appendChild(renderer.domElement)
@@ -105,20 +107,26 @@ function init() {
         ballZStart -= ballSpacing
 
         let ballType
-        if (thisCount === 8) {
+        if (thisCount + 1 === 8) {
           ballType = 'black'
         }
-        ballType = thisCount > 8 ? 'striped' : 'solid'
+        ballType = thisCount + 1 > 8 ? 'striped' : 'solid'
 
         newBall.userData = {
           id: thisCount + 1,
           ballType: ballType,
         }
 
-        console.log(newBall)
+        let isHidden
+        if (props.gameId !== undefined) {
+          isHidden = gameStore.getBall(props.gameId, thisCount + 1)
+        }
 
-        scene.add(newBall)
-        objects.push(newBall)
+        console.log(isHidden)
+        if (!isHidden) {
+          scene.add(newBall)
+          objects.push(newBall)
+        }
 
         // Activate DragControls after all balls are loaded
         if (objects.length === 15) {
@@ -190,6 +198,49 @@ function animate() {
   animationFrameId = requestAnimationFrame(animate)
   renderer.render(scene, camera)
 }
+
+function dispose() {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId)
+  }
+
+  if (dragControls) dragControls.dispose?.()
+  if (orbitControls) orbitControls.dispose?.()
+
+  scene?.traverse((child) => {
+    if (child.geometry) child.geometry.dispose()
+    if (child.material) {
+      if (Array.isArray(child.material)) {
+        child.material.forEach((m) => m.dispose())
+      } else {
+        child.material.dispose()
+      }
+    }
+  })
+
+  while (scene?.children?.length > 0) {
+    scene.remove(scene.children[0])
+  }
+
+  if (renderer?.domElement?.parentNode) {
+    renderer.domElement.parentNode.removeChild(renderer.domElement)
+  }
+
+  renderer?.dispose?.()
+
+  // Null everything for GC
+  scene = null
+  camera = null
+  renderer = null
+  dragControls = null
+  orbitControls = null
+  animationFrameId = null
+  objects.length = 0
+}
+
+onBeforeUnmount(() => {
+  dispose()
+})
 </script>
 
 <template>
