@@ -130,8 +130,8 @@ function toggleView() {
                     gameStore.getCurrentPlayerName(id, 1) }}</span>
             </div>
         </div>
-        <div class="h-[60vh]">
-            <FakeBillardTable class="w-[50vw]" v-if="!threeDTableVisible"
+        <div class="w-full h-[60vh]">
+            <FakeBillardTable class="w-full" v-if="!threeDTableVisible"
                 :current-team-id="gameStore.getCurrentTeamIndex(id)" :game-id="id" />
 
             <BilliardTable v-else ref="billiardRef" :current-team-id="gameStore.getCurrentTeamIndex(id)" :game-id="id"
