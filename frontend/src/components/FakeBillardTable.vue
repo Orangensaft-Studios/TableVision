@@ -15,7 +15,7 @@ defineProps({
 
 <template>
     <div class="w-full h-full bg-green-700 border-8 border-amber-950 rounded-lg flex justify-center items-center relative gap-x-2">
-        <Ball :number="0" class="ml-20" />
+        <Ball :number="0" :team-id="currentTeamId" :game-id="gameId" class="ml-20" />
         <div class="ml-auto mr-20 flex flex-row items-center space-y-2">
             <div class="flex flex-col justify-center space-y-2 space-x-2">
                 <Ball :number="1" :team-id="currentTeamId" :game-id="gameId" />

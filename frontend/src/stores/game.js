@@ -32,6 +32,13 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function playedBall(gameID, teamIndex, ballType, number) {
+    console.log(`Played ball ${number} of type ${ballType} for team ${teamIndex}`);
+
+    if (number === 0) {
+      foul(gameID, teamIndex);
+      return;
+    }  
+    
     if (!isGameActive(gameID)) {
       return;
     }
