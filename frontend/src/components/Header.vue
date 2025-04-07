@@ -7,7 +7,6 @@
             <router-link to="/">
                 <h1 class="md:text-4xl text-2xl w-fit font-bold text-green-900">TableVision</h1>
             </router-link>
-            <!-- Wrap slot content to adjust button size responsively -->
             <div class="mt-2 lg:mt-0 flex justify-center lg:justify-end">
                 <div class="text-xs lg:text-base">
                     <slot name="action"></slot>
