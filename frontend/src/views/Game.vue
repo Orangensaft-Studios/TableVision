@@ -110,47 +110,33 @@ function toggleView() {
             </div>
 
 
-      <div class="flex justify-between">
-        <span
-          class="text-3xl"
-          :class="gameStore.getCurrentGame(id).teams[0].isTurn ? 'font-bold' : ''"
-          >{{ gameStore.getCurrentPlayerName(id, 0) }}</span
-        >
-        <div class="flex items-center justify-end px-4 mt-2">
-          <span class="text-sm font-medium mr-3 text-gray-700">2D</span>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only peer" v-model="threeDTableVisible" />
-            <div
-              class="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:bg-emerald-500 transition-all duration-300 ease-in-out"
-            ></div>
-            <div
-              class="absolute left-1 top-1 bg-white w-6 h-6 rounded-full shadow-md transform transition-all duration-300 ease-in-out peer-checked:translate-x-6"
-            ></div>
-          </label>
-          <span class="text-sm font-medium ml-3 text-gray-700">3D</span>
+            <div class="flex justify-between">
+                <span class="text-3xl" :class="gameStore.getCurrentGame(id).teams[0].isTurn ? 'font-bold' : ''">{{
+                    gameStore.getCurrentPlayerName(id, 0) }}</span>
+                <div class="flex items-center justify-end px-4 mt-2">
+                    <span class="text-sm font-medium mr-3 text-gray-700">2D</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" v-model="threeDTableVisible" />
+                        <div
+                            class="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-500 rounded-full peer peer-checked:bg-emerald-500 transition-all duration-300 ease-in-out">
+                        </div>
+                        <div
+                            class="absolute left-1 top-1 bg-white w-6 h-6 rounded-full shadow-md transform transition-all duration-300 ease-in-out peer-checked:translate-x-6">
+                        </div>
+                    </label>
+                    <span class="text-sm font-medium ml-3 text-gray-700">3D</span>
+                </div>
+                <span class="text-3xl" :class="gameStore.getCurrentGame(id).teams[1].isTurn ? 'font-bold' : ''">{{
+                    gameStore.getCurrentPlayerName(id, 1) }}</span>
+            </div>
         </div>
-        <span
-          class="text-3xl"
-          :class="gameStore.getCurrentGame(id).teams[1].isTurn ? 'font-bold' : ''"
-          >{{ gameStore.getCurrentPlayerName(id, 1) }}</span
-        >
-      </div>
-    </div>
-    <div class="w-[50vw] h-[60vh]">
-      <FakeBillardTable
-        v-if="!threeDTableVisible"
-        :current-team-id="gameStore.getCurrentTeamIndex(id)"
-        :game-id="id"
-      />
+        <div class="h-[60vh]">
+            <FakeBillardTable class="w-[50vw]" v-if="!threeDTableVisible"
+                :current-team-id="gameStore.getCurrentTeamIndex(id)" :game-id="id" />
 
-      <BilliardTable
-        v-else
-        ref="billiardRef"
-        :current-team-id="gameStore.getCurrentTeamIndex(id)"
-        :game-id="id"
-        class="w-full h-full block"
-      />
-    </div>
+            <BilliardTable v-else ref="billiardRef" :current-team-id="gameStore.getCurrentTeamIndex(id)" :game-id="id"
+                class="w-full h-full block" />
+        </div>
 
         <div class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3 mt-5" v-if="!gameStore.getCurrentGame(id)?.isFinished">
             <Button label="Foul" severity="danger" @click="gameStore.foul(id, gameStore.getCurrentTeamIndex(id))" />

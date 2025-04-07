@@ -80,7 +80,7 @@ const stats = computed(() => gameStore.getStatsPerTeam(gameID))
         <!-- Navigation Button -->
         <div class="flex justify-center mt-10">
             <button @click="router.push({name: 'games', params: { id: gameID }})"
-                class="px-5 py-2 hover:cursor-pointer bg-green-600 text-white rounded-xl hover:bg-green-500">
+                class="px-5 py-2 hover:cursor-pointer bg-green-600 text-white rounded-sm hover:bg-green-500">
                 Back to Game
             </button>
         </div>
