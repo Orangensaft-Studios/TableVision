@@ -158,8 +158,10 @@ function init() {
     orbitControls.enabled = true // Re-enable OrbitControls after dragging
   })
   dragControls.addEventListener('drag', (event) => {
-    event.object.position.y = 1
-    checkIfOverHole(event.object)
+    if (!gameStore.getCurrentGame(id)?.isFinished) {
+      event.object.position.y = 1
+      checkIfOverHole(event.object)
+    }
   })
 
   animate()
