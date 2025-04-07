@@ -98,7 +98,6 @@ export const useGameStore = defineStore('game', () => {
       }
       games.value[gameIndex].teams[teamIndex].isTurn = false;
       games.value[gameIndex].teams[otherTeamIndex].isTurn = false;
-      games.value[gameIndex].teams[teamIndex].didWin = true;
       games.value[gameIndex].isFinished = true;
       return true;
     }

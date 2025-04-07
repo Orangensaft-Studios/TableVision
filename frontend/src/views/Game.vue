@@ -23,8 +23,6 @@ const team2Balls = ref([])
 
 const threeDTableVisible = ref(false)
 
-const didCurrentPlayerPlay = ref(false)
-
 const visible = ref(false)
 
 watch(threeDTableVisible, (val) => {
@@ -42,8 +40,6 @@ onMounted(() => {
         team2Points.value = newGame.teams[1]?.points || 0
         team1Balls.value = gameStore.getBalls(id, 0) || []
         team2Balls.value = gameStore.getBalls(id, 1) || []
-        didCurrentPlayerPlay.value =
-          newGame.teams[gameStore.getCurrentTeamIndex(id)].currentPlayerPlayed
       }
     },
     { immediate: true },
@@ -74,14 +70,6 @@ onMounted(() => {
     () => gameStore.getBalls(id, 1),
     (newBalls) => {
       team2Balls.value = newBalls || []
-    },
-  )
-
-  watch(
-    () =>
-      gameStore.getCurrentGame(id)?.teams[gameStore.getCurrentTeamIndex(id)].currentPlayerPlayed,
-    (newValue) => {
-      didCurrentPlayerPlay.value = newValue
     },
   )
 })
