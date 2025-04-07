@@ -16,9 +16,13 @@ defineExpose({
   dispose,
 })
 
-watch
-
 const gameStore = useGameStore()
+
+watch(gameStore.getCurrentGame(props.gameId)?.isFinished, (val) => {
+  if (val) {
+    if (dragControls) dragControls.dispose?.()
+  }
+})
 
 let scene, camera, renderer, dragControls, orbitControls
 let billiardTable, billiardBall
@@ -53,7 +57,7 @@ function init() {
   const container = document.getElementById('billiard-scene')
   // Scene
   scene = new THREE.Scene()
-  scene.background = new THREE.Color(0x82dbc5)
+  scene.background = new THREE.Color(0xffffff)
 
   // Camera
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
@@ -79,7 +83,7 @@ function init() {
   loader2.setDRACOLoader(dracoLoader)
 
   // Load Billiard Table
-  loader.load('/billiardTable.glb', (gltf) => {
+  loader2.load('/billiardTable.glb', (gltf) => {
     billiardTable = gltf.scene
     billiardTable.scale.set(0.2, 0.2, 0.2)
     scene.add(billiardTable)
