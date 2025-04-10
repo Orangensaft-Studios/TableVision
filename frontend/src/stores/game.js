@@ -181,7 +181,7 @@ export const useGameStore = defineStore('game', () => {
     games.value[getGameIndex(gameID)].teams[teamIndex].usernames[
       getCurrentPlayerIndex(gameID, teamIndex)
     ].fouls += 1;
-    switchTurns(gameID, getOtherTeamIndex(teamIndex));
+    switchTurns(gameID, teamIndex);
   }
 
   function security(gameID, teamIndex) {}
