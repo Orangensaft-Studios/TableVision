@@ -139,8 +139,9 @@ export const useGameStore = defineStore('game', () => {
     const game = getCurrentGame(gameID);
 
     games.value[gameIndex].teams[teamIndex].currentPlayerPlayed = false;
+    
 if(!games.value[gameIndex].teams[teamIndex].currentPlayerPlayed) {
-games.value[gameIndex].teams[teamIndex].usernames[currentPlayerIndex].plays += 1;
+games.value[gameIndex].teams[teamIndex].usernames[getCurrentPlayerIndex(gameID, teamIndex)].plays += 1;
 }
     games.value[gameIndex].teams.forEach((team) => {
       team.isTurn = !team.isTurn
