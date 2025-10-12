@@ -71,9 +71,7 @@ export const useGameStore = defineStore('game', () => {
       addBall(gameID, teamIndex, number)
     }
 
-    // if (didSomeoneWin(gameID, teamIndex, number, confirm, event)) {
-    //   console.log(getStatsPerTeam(gameID))
-    // }
+    
   }
 
   function isGameActive(gameID) {
