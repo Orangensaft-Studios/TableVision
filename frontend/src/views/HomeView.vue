@@ -1,20 +1,20 @@
 <script setup>
-import Button from 'primevue/button'
-import ConfirmDialog from 'primevue/confirmdialog'
-import Toast from 'primevue/toast'
-import { RouterLink } from 'vue-router'
-import { useGameStore } from '@/stores/game'
-import { useConfirm } from 'primevue/useconfirm'
-import { useToast } from 'primevue/usetoast'
+import Button from 'primevue/button';
+import ConfirmDialog from 'primevue/confirmdialog';
+import Toast from 'primevue/toast';
+import { RouterLink } from 'vue-router';
+import { useGameStore } from '@/stores/game';
+import { useConfirm } from 'primevue/useconfirm';
+import { useToast } from 'primevue/usetoast';
 
-const gameStore = useGameStore()
-const confirm = useConfirm()
-const toast = useToast()
+const gameStore = useGameStore();
+const confirm = useConfirm();
+const toast = useToast();
 
 function clear() {
   if (gameStore.games.length === 0) {
-    toast.add({ severity: 'info', summary: 'Info', detail: 'No rounds to clear', life: 3000 })
-    return
+    toast.add({ severity: 'info', summary: 'Info', detail: 'No rounds to clear', life: 3000 });
+    return;
   }
   confirm.require({
     header: 'Clear game data',
@@ -25,9 +25,9 @@ function clear() {
     rejectClass: 'p-button-secondary p-button-outlined',
     acceptClass: 'p-button-danger',
     accept: () => {
-      gameStore.clear()
+      gameStore.clear();
     },
-  })
+  });
 }
 </script>
 

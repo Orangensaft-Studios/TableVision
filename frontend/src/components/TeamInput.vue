@@ -1,5 +1,5 @@
 <script setup>
-const teamName = defineModel()
+const teamName = defineModel();
 </script>
 
 <template>

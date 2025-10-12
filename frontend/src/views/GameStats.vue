@@ -1,54 +1,57 @@
 <script setup>
-import { computed } from 'vue'
-import { useGameStore } from '@/stores/game'
-import { useRoute, useRouter } from 'vue-router'
-import Header from '@/components/Header.vue'
-import Ball from '@/components/Ball.vue'
-import Toast from 'primevue/toast'
-import { useToast } from 'primevue/usetoast'
+import { computed } from 'vue';
+import { useGameStore } from '@/stores/game';
+import { useRoute, useRouter } from 'vue-router';
+import Header from '@/components/Header.vue';
+import Ball from '@/components/Ball.vue';
+import Toast from 'primevue/toast';
+import { useToast } from 'primevue/usetoast';
 
-const toast = useToast()
-const route = useRoute()
-const router = useRouter()
-const gameID = parseInt(route.params.id)
-const gameStore = useGameStore()
-const stats = computed(() => gameStore.getStatsPerTeam(gameID))
+const toast = useToast();
+const route = useRoute();
+const router = useRouter();
+const gameID = parseInt(route.params.id);
+const gameStore = useGameStore();
+const stats = computed(() => gameStore.getStatsPerTeam(gameID));
 const startDate = computed(() => {
-  const date = gameStore.getStartDate(gameID)
-  if (!date) return ''
-  return new Date(date).toLocaleDateString()
-})
+  const date = gameStore.getStartDate(gameID);
+  if (!date) return '';
+  return new Date(date).toLocaleDateString();
+});
 
 async function copyStats() {
-  const teams = stats.value || []
-  let md = `# Game ${gameID} Stats\n\n`
+  const teams = stats.value || [];
+  let md = `# Game ${gameID} Stats\n\n`;
+  md += `Date: ${startDate.value}\n`;
 
   teams.forEach((team) => {
-    md += `## Team ${team.name}`
-    if (team.ballType) md += ` (${team.ballType})`
-    team.didWin ? (md += ` — Winner 🏆`) : (md += ` — Loser ❌`)
-    md += `\n`
-    md += `- Points: ${team.points}\n`
-    md += `- Fouls: ${team.fouls}\n`
-
-    md += `### Players\n`
-    ;(team.players || []).forEach((p) => {
-      const name = String(p.name || '').replace(/\|/g, '\\|')
-      md += `- ${name}:\n`
-      md += `  - ${p.points ?? 0} point${(p.points ?? 0) === 1 ? '' : 's'}\n`
-      md += `  - ${p.fouls ?? 0} foul${(p.fouls ?? 0) === 1 ? '' : 's'}\n`
-      md += `  - ${p.plays ?? 0} play${(p.plays ?? 0) === 1 ? '' : 's'}\n`
-    })
-
-    md += `\n`
-
-    md += `### Balls\n\n`
-    if (team.balls && team.balls.length) {
-      md += team.balls.join(', ') + '\n'
-    } else {
-      md += `No balls played\n`
+    md += `## Team ${team.name}`;
+    if (team.ballType) md += ` (${team.ballType})`;
+    const anyWinner = teams.some(t => t.didWin);
+    if (anyWinner) {
+      md += team.didWin ? ` — Winner 🏆` : ` — Loser ❌`;
     }
-  })
+    md += `\n`;
+    md += `- Points: ${team.points}\n`;
+    md += `- Fouls: ${team.fouls}\n`;
+
+    md += `### Players\n`;
+    (team.players || []).forEach((p) => {
+      const name = String(p.name || '').replace(/\|/g, '\\|');
+      md += `- ${name}:\n`;
+      md += `  - ${p.points ?? 0} point${(p.points ?? 0) === 1 ? '' : 's'}\n`;
+      md += `  - ${p.fouls ?? 0} foul${(p.fouls ?? 0) === 1 ? '' : 's'}\n`;
+      md += `  - ${p.plays ?? 0} play${(p.plays ?? 0) === 1 ? '' : 's'}\n`;
+    });
+
+    md += `### Balls\n`;
+    if (team.balls && team.balls.length) {
+      md += team.balls.join(', ') + '\n';
+    } else {
+      md += `No balls played\n`;
+    }
+    md += `\n`;
+  });
 
   await navigator.clipboard.writeText(md).then(() => {
     toast.add({
@@ -56,8 +59,8 @@ async function copyStats() {
       summary: 'Success',
       detail: 'Stats copied to clipboard',
       life: 3000,
-    })
-  })
+    });
+  });
 }
 </script>
 

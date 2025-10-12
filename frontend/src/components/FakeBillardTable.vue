@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Ball from './Ball.vue'
+import Ball from './Ball.vue';
 
 defineProps({
   currentTeamId: {
@@ -10,7 +10,7 @@ defineProps({
     type: Number,
     required: true,
   },
-})
+});
 </script>
 
 <template>

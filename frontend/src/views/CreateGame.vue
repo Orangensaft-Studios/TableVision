@@ -1,40 +1,40 @@
 <script setup>
-import Team from '@/components/Team.vue'
-import { useGameStore } from '@/stores/game'
-import { ref, onMounted } from 'vue'
-import Header from '@/components/Header.vue'
+import Team from '@/components/Team.vue';
+import { useGameStore } from '@/stores/game';
+import { ref, onMounted } from 'vue';
+import Header from '@/components/Header.vue';
 
-const game = useGameStore()
+const game = useGameStore();
 const teams = ref([
   { usernames: [''], name: '' },
   { usernames: [''], name: '' },
-])
+]);
 
 function updateTeam(usernames, teamName, teamID) {
-  teams.value[teamID] = { usernames: usernames, name: teamName }
+  teams.value[teamID] = { usernames: usernames, name: teamName };
 }
 
 function resetTeams() {
   teams.value = [
     { usernames: [''], name: '' },
     { usernames: [''], name: '' },
-  ]
+  ];
 }
 
 function start() {
-  game.startGame(teams.value)
+  game.startGame(teams.value);
 }
 
 onMounted(() => {
-  const previousTeams = history.state?.previousTeams
+  const previousTeams = history.state?.previousTeams;
   if (previousTeams && previousTeams.length === 2) {
     // Stelle sicher, dass jedes Team mindestens einen leeren Benutzernamen hat
     teams.value = previousTeams.map((team) => ({
       name: team.name || '',
       usernames: team.usernames && team.usernames.length > 0 ? team.usernames : [''],
-    }))
+    }));
   }
-})
+});
 </script>
 
 <template>

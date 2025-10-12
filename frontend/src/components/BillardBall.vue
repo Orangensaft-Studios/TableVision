@@ -1,15 +1,15 @@
 <script setup>
-import { UseLoader } from '@tresjs/core'
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader'
-import { shallowRef, onMounted } from 'vue'
-import { useLoop } from '@tresjs/core'
-import * as THREE from 'three'
+import { UseLoader } from '@tresjs/core';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader';
+import { shallowRef, onMounted } from 'vue';
+import { useLoop } from '@tresjs/core';
+import * as THREE from 'three';
 
-const boxRef = shallowRef()
+const boxRef = shallowRef();
 
-const { onBeforeRender } = useLoop()
+const { onBeforeRender } = useLoop();
 
-onMounted(() => {})
+onMounted(() => {});
 </script>
 
 <template>

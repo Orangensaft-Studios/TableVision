@@ -1,8 +1,8 @@
 <script setup>
-import { ref, watch, defineEmits, onMounted } from 'vue'
-import TeamInput from './TeamInput.vue'
-import UserInput from './UserInput.vue'
-import { VueDraggable } from 'vue-draggable-plus'
+import { ref, watch, defineEmits, onMounted } from 'vue';
+import TeamInput from './TeamInput.vue';
+import UserInput from './UserInput.vue';
+import { VueDraggable } from 'vue-draggable-plus';
 
 const props = defineProps({
   id: Number,
@@ -14,12 +14,12 @@ const props = defineProps({
     type: Array,
     default: () => [''],
   },
-})
+});
 
-const emit = defineEmits(['updatedUsernames'])
+const emit = defineEmits(['updatedUsernames']);
 
-const teamName = ref(props.teamName)
-const usernames = ref([...props.usernames])
+const teamName = ref(props.teamName);
+const usernames = ref([...props.usernames]);
 
 // Entferne den onMounted emit - das verursacht den Rekursionsfehler
 
@@ -28,32 +28,32 @@ watch(
   () => props.teamName,
   (newTeamName) => {
     if (newTeamName !== teamName.value) {
-      teamName.value = newTeamName
+      teamName.value = newTeamName;
     }
   },
-)
+);
 
 watch(
   () => props.usernames,
   (newUsernames) => {
     // Nur aktualisieren wenn sich die Werte wirklich geändert haben
-    const currentUsernames = JSON.stringify(usernames.value)
-    const newUsernamesStr = JSON.stringify(newUsernames)
+    const currentUsernames = JSON.stringify(usernames.value);
+    const newUsernamesStr = JSON.stringify(newUsernames);
 
     if (currentUsernames !== newUsernamesStr) {
-      usernames.value = [...newUsernames]
+      usernames.value = [...newUsernames];
     }
   },
   { deep: true },
-)
+);
 
 function addUser() {
-  usernames.value.push('')
+  usernames.value.push('');
 }
 
 function removeUser() {
   if (usernames.value.length > 1) {
-    usernames.value.pop()
+    usernames.value.pop();
   }
 }
 
@@ -61,14 +61,14 @@ function removeUser() {
 watch(
   usernames,
   (newUsernames) => {
-    emit('updatedUsernames', newUsernames, teamName.value, props.id)
+    emit('updatedUsernames', newUsernames, teamName.value, props.id);
   },
   { deep: true },
-)
+);
 
 watch(teamName, (newTeamName) => {
-  emit('updatedUsernames', usernames.value, newTeamName, props.id)
-})
+  emit('updatedUsernames', usernames.value, newTeamName, props.id);
+});
 </script>
 
 <template>

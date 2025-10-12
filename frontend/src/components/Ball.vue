@@ -1,17 +1,17 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useGameStore } from '@/stores/game'
-import { useConfirm } from 'primevue/useconfirm'
-import ConfirmPopup from 'primevue/confirmpopup'
+import { ref, computed } from 'vue';
+import { useGameStore } from '@/stores/game';
+import { useConfirm } from 'primevue/useconfirm';
+import ConfirmPopup from 'primevue/confirmpopup';
 
-const confirm = useConfirm()
+const confirm = useConfirm();
 
 const props = defineProps({
   number: {
     type: Number,
     required: true,
     validator: (value) => {
-      return value >= 0 && value <= 15
+      return value >= 0 && value <= 15;
     },
   },
   teamId: {
@@ -26,9 +26,9 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-})
+});
 
-const gameStore = useGameStore()
+const gameStore = useGameStore();
 
 const colors = ref([
   '#F3C439',
@@ -39,37 +39,37 @@ const colors = ref([
   '#3B6E45',
   '#A25128',
   '#000000',
-])
+]);
 
 const thisColor = computed(() => {
-  return colors.value[props.number < 9 ? props.number - 1 : props.number - 9]
-})
+  return colors.value[props.number < 9 ? props.number - 1 : props.number - 9];
+});
 
 const type = computed(() => {
   if (props.number === 8) {
-    return 'black'
+    return 'black';
   }
-  return props.number > 8 ? 'striped' : 'solid'
-})
+  return props.number > 8 ? 'striped' : 'solid';
+});
 
 function playBall(event) {
   if (props.teamId !== undefined && props.gameId !== undefined) {
-    gameStore.playedBall(props.gameId, props.teamId, type.value, props.number, confirm, event)
+    gameStore.playedBall(props.gameId, props.teamId, type.value, props.number, confirm, event);
   }
 }
 
 const isHidden = computed(() => {
   if (props.teamId !== undefined && props.gameId !== undefined) {
-    return gameStore.getBall(props.gameId, props.number)
+    return gameStore.getBall(props.gameId, props.number);
   }
-})
+});
 
 const isClickable = computed(() => {
   if (props.gameId) {
-    return gameStore.isGameActive(props.gameId)
+    return gameStore.isGameActive(props.gameId);
   }
-  return props.clickable
-})
+  return props.clickable;
+});
 </script>
 
 <template>

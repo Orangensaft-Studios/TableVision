@@ -1,5 +1,5 @@
 <script setup>
-const username = defineModel()
+const username = defineModel();
 </script>
 
 <template>

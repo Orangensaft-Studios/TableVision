@@ -1,101 +1,102 @@
 <script setup>
-import Header from '@/components/Header.vue'
-import FakeBillardTable from '@/components/FakeBillardTable.vue'
-import Button from 'primevue/button'
-import { useGameStore } from '@/stores/game'
-import { onMounted, watch, ref } from 'vue'
-import Ball from '@/components/Ball.vue'
-import Dialog from 'primevue/dialog'
-import { useRoute, useRouter } from 'vue-router'
-import BillardTable from '@/components/BillardTable.vue'
+import Header from '@/components/Header.vue';
+import FakeBillardTable from '@/components/FakeBillardTable.vue';
+import Button from 'primevue/button';
+import { useGameStore } from '@/stores/game';
+import { onMounted, watch, ref } from 'vue';
+import Ball from '@/components/Ball.vue';
+import Dialog from 'primevue/dialog';
+import { useRoute, useRouter } from 'vue-router';
+import BillardTable from '@/components/BillardTable.vue';
 
-const router = useRouter()
-const route = useRoute()
-const gameStore = useGameStore()
-const id = Number(route.params.id)
-const billardRef = ref(null)
+const router = useRouter();
+const route = useRoute();
+const gameStore = useGameStore();
+const id = Number(route.params.id);
+const billardRef = ref(null);
 
-const team1Points = ref(0)
-const team2Points = ref(0)
+const team1Points = ref(0);
+const team2Points = ref(0);
 
-const team1Balls = ref([])
-const team2Balls = ref([])
+const team1Balls = ref([]);
+const team2Balls = ref([]);
 
-const threeDTableVisible = ref(false)
+const threeDTableVisible = ref(false);
 
-const visible = ref(false)
+const visible = ref(false);
 
 watch(threeDTableVisible, (val) => {
   if (!val && billardRef.value) {
-    billardRef.value.dispose()
+    billardRef.value.dispose();
   }
-})
+});
 
 onMounted(() => {
   watch(
     () => gameStore.getCurrentGame(id),
     (newGame) => {
       if (newGame && newGame.teams) {
-        team1Points.value = newGame.teams[0]?.points || 0
-        team2Points.value = newGame.teams[1]?.points || 0
-        team1Balls.value = gameStore.getBalls(id, 0) || []
-        team2Balls.value = gameStore.getBalls(id, 1) || []
+        team1Points.value = newGame.teams[0]?.points || 0;
+        team2Points.value = newGame.teams[1]?.points || 0;
+        team1Balls.value = gameStore.getBalls(id, 0) || [];
+        team2Balls.value = gameStore.getBalls(id, 1) || [];
       }
     },
     { immediate: true },
-  )
+  );
 
   watch(
     () => gameStore.getCurrentGame(id)?.teams[0]?.points,
     (newPoints) => {
-      team1Points.value = newPoints || 0
+      team1Points.value = newPoints || 0;
     },
-  )
+  );
 
   watch(
     () => gameStore.getCurrentGame(id)?.teams[1]?.points,
     (newPoints) => {
-      team2Points.value = newPoints || 0
+      team2Points.value = newPoints || 0;
     },
-  )
+  );
 
   watch(
     () => gameStore.getBalls(id, 0),
     (newBalls) => {
-      team1Balls.value = newBalls || []
+      team1Balls.value = newBalls || [];
     },
-  )
+  );
 
   watch(
     () => gameStore.getBalls(id, 1),
     (newBalls) => {
-      team2Balls.value = newBalls || []
+      team2Balls.value = newBalls || [];
     },
-  )
-})
+  );
+});
 
 function endGame(route) {
-  visible.value = false
-  gameStore.end(id)
-  router.push({ name: route })
+  visible.value = false;
+  gameStore.end(id);
+  if (route === 'stay') return;
+  router.push({ name: route });
 }
 
 function toggleView() {
-  threeDTableVisible.value = !threeDTableVisible.value
-  console.log(threeDTableVisible.value)
+  threeDTableVisible.value = !threeDTableVisible.value;
+  console.log(threeDTableVisible.value);
 }
 
 function playAgain() {
-  const currentGame = gameStore.getCurrentGame(id)
+  const currentGame = gameStore.getCurrentGame(id);
   const teams = currentGame.teams.map((team) => ({
     name: team.name,
     usernames: team.usernames.map((user) => user.name),
-  }))
+  }));
 
   router.push({
     name: 'new',
     state: { previousTeams: teams },
-  })
+  });
 }
 </script>
 
@@ -234,6 +235,7 @@ function playAgain() {
         <Button type="button" label="Show stats" @click="endGame('stats')"></Button>
         <Button type="button" label="Start new game" @click="endGame('new')"></Button>
         <Button type="button" label="Exit to menu" @click="endGame('home')"></Button>
+        <Button type="button" label="Stay in game screen" @click="endGame('stay')"></Button>
       </div>
     </Dialog>
   </div>
