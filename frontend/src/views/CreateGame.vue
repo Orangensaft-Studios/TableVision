@@ -28,7 +28,7 @@ function start() {
 onMounted(() => {
   const previousTeams = history.state?.previousTeams;
   if (previousTeams && previousTeams.length === 2) {
-    // Stelle sicher, dass jedes Team mindestens einen leeren Benutzernamen hat
+    // Ensure that each team has at least one empty username
     teams.value = previousTeams.map((team) => ({
       name: team.name || '',
       usernames: team.usernames && team.usernames.length > 0 ? team.usernames : [''],

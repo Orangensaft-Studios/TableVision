@@ -21,9 +21,9 @@ const emit = defineEmits(['updatedUsernames']);
 const teamName = ref(props.teamName);
 const usernames = ref([...props.usernames]);
 
-// Entferne den onMounted emit - das verursacht den Rekursionsfehler
+// Remove the onMounted emit - this causes the recursion error
 
-// Watch für Props-Änderungen
+// Watch for props changes
 watch(
   () => props.teamName,
   (newTeamName) => {
@@ -36,9 +36,9 @@ watch(
 watch(
   () => props.usernames,
   (newUsernames) => {
-    // Nur aktualisieren wenn sich die Werte wirklich geändert haben
-    const currentUsernames = JSON.stringify(usernames.value);
-    const newUsernamesStr = JSON.stringify(newUsernames);
+    // Only update when values have actually changed
+    const currentUsernames = JSON.stringify(usernames.value)
+    const newUsernamesStr = JSON.stringify(newUsernames)
 
     if (currentUsernames !== newUsernamesStr) {
       usernames.value = [...newUsernames];
@@ -57,7 +57,7 @@ function removeUser() {
   }
 }
 
-// Watch für lokale Änderungen
+// Watch for local changes
 watch(
   usernames,
   (newUsernames) => {
