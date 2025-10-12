@@ -25,7 +25,7 @@ watch(gameStore.getCurrentGame(props.gameId)?.isFinished, (val) => {
 })
 
 let scene, camera, renderer, dragControls, orbitControls
-let billiardTable, billiardBall
+let billardTable, billardBall
 let animationFrameId = null
 
 let ballsInHole = []
@@ -51,10 +51,10 @@ const holePositions = [
   { position: new THREE.Vector3(-1.58, 0.2, 0.89), name: 'Bottom Left' },
 ]
 const holeRadius = 0.13 // Adjust based on your model
-const ballFiles = Array.from({ length: 15 }, (_, i) => `/billiardBall${i + 1}.glb`)
+const ballFiles = Array.from({ length: 15 }, (_, i) => `/billardBall${i + 1}.glb`)
 
 function init() {
-  const container = document.getElementById('billiard-scene')
+  const container = document.getElementById('billard-scene')
   // Scene
   scene = new THREE.Scene()
   scene.background = new THREE.Color(0xffffff)
@@ -82,14 +82,14 @@ function init() {
   dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/')
   loader2.setDRACOLoader(dracoLoader)
 
-  // Load Billiard Table
-  loader2.load('/billiardTable.glb', (gltf) => {
-    billiardTable = gltf.scene
-    billiardTable.scale.set(0.2, 0.2, 0.2)
-    scene.add(billiardTable)
+  // Load Billard Table
+  loader2.load('/billardTable.glb', (gltf) => {
+    billardTable = gltf.scene
+    billardTable.scale.set(0.2, 0.2, 0.2)
+    scene.add(billardTable)
   })
 
-  // Load Billiard Ball
+  // Load Billard Ball
   const startX = 0 // Center on table
   const startZ = 0 // Adjust Z to position near breaking area
   const ballSpacing = 0.22 // Adjusted for proper ball touching
@@ -248,5 +248,5 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div id="billiard-scene" class="w-full h-full"></div>
+  <div id="billard-scene" class="w-full h-full"></div>
 </template>

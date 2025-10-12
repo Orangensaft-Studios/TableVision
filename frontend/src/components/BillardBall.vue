@@ -15,7 +15,7 @@ onMounted(() => {})
 <template>
   <TresMesh ref="boxRef">
     <Suspense>
-      <UseLoader v-slot="{ data }" :loader="GLTFLoader" url="/billiardBall.glb">
+      <UseLoader v-slot="{ data }" :loader="GLTFLoader" url="/billardBall.glb">
         <primitive :object="data.scene" :scale="[0.4, 0.4, 0.4]" />
       </UseLoader>
     </Suspense>

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap');
 
 @layer base {
@@ -12,8 +12,8 @@
 
 /* Reset CSS */
 @layer reset {
-    button,
-    input {
-        /* CSS to Reset */
-    }
+  button,
+  input {
+    /* CSS to Reset */
+  }
 }
