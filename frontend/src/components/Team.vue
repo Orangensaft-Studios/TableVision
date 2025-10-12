@@ -23,7 +23,7 @@ const usernames = ref([...props.usernames])
 
 // Entferne den onMounted emit - das verursacht den Rekursionsfehler
 
-// Watch für Props-Änderungen
+// Watch for props changes
 watch(
   () => props.teamName,
   (newTeamName) => {
