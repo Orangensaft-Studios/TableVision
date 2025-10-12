@@ -57,7 +57,7 @@ function removeUser() {
   }
 }
 
-// Watch für lokale Änderungen
+// Watch for local changes
 watch(
   usernames,
   (newUsernames) => {
