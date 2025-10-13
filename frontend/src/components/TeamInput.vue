@@ -3,5 +3,5 @@ const teamName = defineModel();
 </script>
 
 <template>
-    <InputText placeholder="Teamname" v-model="teamName" required />
+  <InputText placeholder="Teamname" v-model="teamName" required />
 </template>

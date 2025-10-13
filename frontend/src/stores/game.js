@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia'
-import { useRouter } from 'vue-router'
-import { useStorage } from '@vueuse/core'
+import { defineStore } from 'pinia';
+import { useRouter } from 'vue-router';
+import { useStorage } from '@vueuse/core';
 
 export const useGameStore = defineStore('game', () => {
   const router = useRouter();
@@ -10,6 +10,7 @@ export const useGameStore = defineStore('game', () => {
     const game = {
       id: games.value.length + 1,
       isFinished: false,
+      startDate: new Date().toISOString(),
       teams: teams.map((team, index) => ({
         ...team,
         points: 0,
@@ -26,24 +27,26 @@ export const useGameStore = defineStore('game', () => {
           points: 0,
         })),
       })),
-    }
+    };
     games.value.push(game);
     await router.push({ name: 'games', params: { id: game.id } });
   }
 
-  function playedBall(gameID, teamIndex, ballType, number) {
-    console.log(`Played ball ${number} of type ${ballType} for team ${teamIndex}`);
+  function playedBall(gameID, teamIndex, ballType, number, confirm, event) {
+    // console.log(`Played ball ${number} of type ${ballType} for team ${teamIndex}`)
 
     if (number === 0) {
+      // Cue ball
       foul(gameID, teamIndex);
       return;
-    }  
-    
+    }
+
     if (!isGameActive(gameID)) {
       return;
     }
 
     if (!isAnyBallTypeSet(gameID)) {
+      // First valid ball sets the team types
       setTeamBallType(gameID, teamIndex, ballType);
     }
 
@@ -68,36 +71,51 @@ export const useGameStore = defineStore('game', () => {
       addBall(gameID, teamIndex, number);
     }
 
-    if(didSomeoneWin(gameID, teamIndex, number)) {
-      console.log(getStatsPerTeam(gameID));
-    }
+    didSomeoneWin(gameID, teamIndex, number, confirm, event);
   }
 
   function isGameActive(gameID) {
     return getCurrentGame(gameID).isFinished === false;
   }
 
-  function is8ValidPlay(gameID, teamIndex) {
+  async function is8ValidPlay(gameID, teamIndex, confirm, event) {
     const game = getCurrentGame(gameID);
     const team = game.teams[teamIndex];
     const amount = team.balls.length;
 
     if (amount === 8) {
-      games.value[getGameIndex(gameID)].teams[teamIndex].points += 1;
-      games.value[getGameIndex(gameID)].teams[teamIndex].usernames[
-        getCurrentPlayerIndex(gameID, teamIndex)
-      ].points += 1;
-      return true;
+      return new Promise((resolve) => {
+        confirm.require({
+          target: event.currentTarget,
+          message: 'Did the 8-ball fall in the called pocket without pocketing the cue ball?',
+          rejectClass: 'p-button-secondary p-button-outlined p-button-sm',
+          acceptClass: 'p-button-sm',
+          rejectLabel: 'No (Foul and loss of team at the table)',
+          acceptLabel: 'Yes (Win)',
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+            games.value[getGameIndex(gameID)].teams[teamIndex].points += 1;
+            games.value[getGameIndex(gameID)].teams[teamIndex].usernames[
+              getCurrentPlayerIndex(gameID, teamIndex)
+            ].points += 1;
+            resolve(true);
+          },
+          reject: () => {
+            resolve(false);
+          },
+        });
+      });
     } else {
       return false;
     }
   }
 
-  function didSomeoneWin(gameID, teamIndex, ball) {
+  async function didSomeoneWin(gameID, teamIndex, ball, confirm, event) {
     if (ball === 8) {
-      const isValid = is8ValidPlay(gameID, teamIndex);
+      const isValid = await is8ValidPlay(gameID, teamIndex, confirm, event);
       const otherTeamIndex = getOtherTeamIndex(teamIndex);
       const gameIndex = getGameIndex(gameID);
+
       if (isValid) {
         games.value[gameIndex].teams[teamIndex].didWin = true;
       } else {
@@ -126,6 +144,11 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function setTeamBallType(gameID, teamIndex, ballType) {
+    // Don't set team ball types for the 8-ball (black)
+    if (ballType === 'black') {
+      return;
+    }
+
     const gameIndex = getGameIndex(gameID);
     games.value[gameIndex].teams[teamIndex].ballType = ballType;
 
@@ -139,16 +162,17 @@ export const useGameStore = defineStore('game', () => {
     const game = getCurrentGame(gameID);
 
     games.value[gameIndex].teams[teamIndex].currentPlayerPlayed = false;
-    
-if(!games.value[gameIndex].teams[teamIndex].currentPlayerPlayed) {
-games.value[gameIndex].teams[teamIndex].usernames[getCurrentPlayerIndex(gameID, teamIndex)].plays += 1;
-}
+
+    if (!games.value[gameIndex].teams[teamIndex].currentPlayerPlayed) {
+      games.value[gameIndex].teams[teamIndex].usernames[
+        getCurrentPlayerIndex(gameID, teamIndex)
+      ].plays += 1;
+    }
     games.value[gameIndex].teams.forEach((team) => {
-      team.isTurn = !team.isTurn
+      team.isTurn = !team.isTurn;
     });
     games.value[gameIndex].teams[teamIndex].currentPlayerIndex =
-      (game.teams[teamIndex].currentPlayerIndex + 1) %
-      game.teams[teamIndex].usernames.length;
+      (game.teams[teamIndex].currentPlayerIndex + 1) % game.teams[teamIndex].usernames.length;
   }
 
   function getCurrentPlayerName(gameID, teamIndex) {
@@ -232,8 +256,13 @@ games.value[gameIndex].teams[teamIndex].usernames[getCurrentPlayerIndex(gameID, 
     }));
   }
 
+  function getStartDate(gameID) {
+    const game = getCurrentGame(gameID);
+    return game ? game.startDate : null;
+  }
+
   function getFoulsPerTeam(team) {
-      return team.usernames.reduce((total, player) => total + player.fouls, 0);
+    return team.usernames.reduce((total, player) => total + player.fouls, 0);
   }
 
   return {
@@ -252,6 +281,7 @@ games.value[gameIndex].teams[teamIndex].usernames[getCurrentPlayerIndex(gameID, 
     getBall,
     isGameActive,
     getStatsPerTeam,
+    getStartDate,
     games,
-  }
-})
+  };
+});

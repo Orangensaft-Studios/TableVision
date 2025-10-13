@@ -16,6 +16,6 @@ const router = createRouter({
     { path: '/games/:id', name: 'games', component: Game },
     { path: '/games/:id/stats', name: 'stats', component: GameStats },
   ],
-})
+});
 
-export default router
+export default router;
