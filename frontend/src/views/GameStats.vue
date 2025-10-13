@@ -70,7 +70,7 @@ async function copyStats() {
     <Header>
       <template #action>
         <button
-          @click="router.push({ name: 'games', query: { id: route.params.id } })"
+          @click="router.push({ name: 'games', params: { id: route.params.id } })"
           class="px-5 py-2 hover:cursor-pointer bg-green-600 text-white rounded-sm hover:bg-green-500"
         >
           Back to Game
