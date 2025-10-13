@@ -21,7 +21,7 @@ const emit = defineEmits(['updatedUsernames']);
 const teamName = ref(props.teamName);
 const usernames = ref([...props.usernames]);
 
-// Remove the onMounted emit - this causes the recursion error
+// The onMounted emit was removed to prevent a recursion error caused by emitting 'updatedUsernames' during component mount.
 
 // Watch for props changes
 watch(
