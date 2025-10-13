@@ -101,11 +101,11 @@ function playAgain() {
 </script>
 
 <template>
-  <div class="flex flex-col items-center h-full mx-[20vw]">
+  <div class="flex flex-col items-center h-full xl:mx-[20vw] mx-[8vw]">
     <Header
       ><template #action>
         <button
-          @click="router.push({ name: 'stats', params: { id: gameID } })"
+          @click="router.push({ name: 'stats', params: { id } })"
           class="px-5 py-2 hover:cursor-pointer bg-green-600 text-white rounded-sm hover:bg-green-500"
         >
           Show stats
@@ -137,7 +137,7 @@ function playAgain() {
           >
 
           <span
-            class="text-3xl"
+            class="text-3xl text-right"
             :class="gameStore.getCurrentGame(id).teams[1].isTurn ? 'font-bold' : ''"
             >{{ gameStore.getCurrentPlayerName(id, 1) }}</span
           >

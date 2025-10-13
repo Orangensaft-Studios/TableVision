@@ -37,8 +37,8 @@ watch(
   () => props.usernames,
   (newUsernames) => {
     // Only update when values have actually changed
-    const currentUsernames = JSON.stringify(usernames.value)
-    const newUsernamesStr = JSON.stringify(newUsernames)
+    const currentUsernames = JSON.stringify(usernames.value);
+    const newUsernamesStr = JSON.stringify(newUsernames);
 
     if (currentUsernames !== newUsernamesStr) {
       usernames.value = [...newUsernames];

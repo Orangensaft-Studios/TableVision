@@ -27,7 +27,7 @@ async function copyStats() {
   teams.forEach((team) => {
     md += `## Team ${team.name}`;
     if (team.ballType) md += ` (${team.ballType})`;
-    const anyWinner = teams.some(t => t.didWin);
+    const anyWinner = teams.some((t) => t.didWin);
     if (anyWinner) {
       md += team.didWin ? ` — Winner 🏆` : ` — Loser ❌`;
     }
@@ -66,11 +66,11 @@ async function copyStats() {
 
 <template>
   <Toast />
-  <div class="flex flex-col h-full mx-[20vw] p-4">
+  <div class="flex flex-col h-full xl:mx-[20vw] mx-[5vw] p-4">
     <Header>
       <template #action>
         <button
-          @click="router.push({ name: 'games', params: { id: gameID } })"
+          @click="router.push({ name: 'games', query: { id: route.params.id } })"
           class="px-5 py-2 hover:cursor-pointer bg-green-600 text-white rounded-sm hover:bg-green-500"
         >
           Back to Game
@@ -153,7 +153,8 @@ async function copyStats() {
     <div class="flex justify-center mt-10">
       <button
         @click="copyStats"
-        class="ml-4 px-5 py-2 hover:cursor-pointer bg-green-600 text-white rounded-sm hover:bg-green-500"
+        class="ml-4 px-5 py-2 hover:cursor-pointer bg-green-600 text-white rounded-sm hover:bg-green-500 disabled:bg-gray-600 disabled:cursor-not-allowed"
+        :disabled="gameStore.isGameActive(gameID)"
       >
         Copy stats
       </button>
