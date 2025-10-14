@@ -3,7 +3,7 @@ import Header from '@/components/Header.vue';
 import FakeBillardTable from '@/components/FakeBillardTable.vue';
 import Button from 'primevue/button';
 import { useGameStore } from '@/stores/game';
-import { onMounted, watch, ref } from 'vue';
+import { onMounted, watch, ref, computed } from 'vue';
 import Ball from '@/components/Ball.vue';
 import Dialog from 'primevue/dialog';
 import { useRoute, useRouter } from 'vue-router';
@@ -98,6 +98,14 @@ function playAgain() {
     state: { previousTeams: teams },
   });
 }
+
+function undoLast() {
+  if (gameStore.canUndo(id)) {
+    gameStore.undo(id);
+  }
+}
+
+const canUndo = computed(() => gameStore.canUndo(id));
 </script>
 
 <template>
@@ -206,6 +214,7 @@ function playAgain() {
       class="flex gap-x-5 gap-y-2 w-full flex-wrap mb-3 mt-5"
       v-if="!gameStore.getCurrentGame(id)?.isFinished"
     >
+      <Button label="Undo" severity="secondary" :disabled="!canUndo" @click="undoLast" />
       <Button
         label="Foul"
         severity="danger"

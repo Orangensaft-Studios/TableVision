@@ -5,12 +5,14 @@ import { useStorage } from '@vueuse/core';
 export const useGameStore = defineStore('game', () => {
   const router = useRouter();
   const games = useStorage('games', []);
+  const MAX_HISTORY = 100;
 
   async function startGame(teams) {
     const game = {
       id: games.value.length + 1,
       isFinished: false,
       startDate: new Date().toISOString(),
+      history: [],
       teams: teams.map((team, index) => ({
         ...team,
         points: 0,
@@ -29,11 +31,12 @@ export const useGameStore = defineStore('game', () => {
       })),
     };
     games.value.push(game);
+    pushHistory(game.id);
     await router.push({ name: 'games', params: { id: game.id } });
   }
 
   function playedBall(gameID, teamIndex, ballType, number, confirm, event) {
-    // console.log(`Played ball ${number} of type ${ballType} for team ${teamIndex}`)
+    pushHistory(gameID);
 
     if (number === 0) {
       // Cue ball
@@ -149,6 +152,8 @@ export const useGameStore = defineStore('game', () => {
       return;
     }
 
+    pushHistory(gameID);
+
     const gameIndex = getGameIndex(gameID);
     games.value[gameIndex].teams[teamIndex].ballType = ballType;
 
@@ -158,6 +163,8 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function switchTurns(gameID, teamIndex) {
+    pushHistory(gameID);
+
     const gameIndex = getGameIndex(gameID);
     const game = getCurrentGame(gameID);
 
@@ -206,6 +213,8 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function foul(gameID, teamIndex) {
+    pushHistory(gameID);
+
     games.value[getGameIndex(gameID)].teams[teamIndex].usernames[
       getCurrentPlayerIndex(gameID, teamIndex)
     ].fouls += 1;
@@ -215,6 +224,7 @@ export const useGameStore = defineStore('game', () => {
   function security(gameID, teamIndex) {}
 
   function end(gameID) {
+    pushHistory(gameID);
     getCurrentGame(gameID).isFinished = true;
   }
 
@@ -228,6 +238,44 @@ export const useGameStore = defineStore('game', () => {
 
   function addBall(gameID, teamIndex, ball) {
     games.value[getGameIndex(gameID)].teams[teamIndex].balls.push(ball);
+  }
+
+  function pushHistory(gameID) {
+    const gameIndex = getGameIndex(gameID);
+    if (gameIndex === -1) return;
+
+    const game = games.value[gameIndex];
+    if (!game.history) game.history = [];
+
+    const snapshot = JSON.parse(JSON.stringify(game));
+    delete snapshot.history;
+
+    game.history.push(snapshot);
+    if (game.history.length > MAX_HISTORY) {
+      game.history.shift();
+    }
+  }
+
+  function canUndo(gameID) {
+    const game = getCurrentGame(gameID);
+    return !!(game && Array.isArray(game.history) && game.history.length > 0);
+  }
+
+  function undo(gameID) {
+    const gameIndex = getGameIndex(gameID);
+    if (gameIndex === -1) return false;
+
+    const game = games.value[gameIndex];
+    if (!game.history || game.history.length === 0) return false;
+
+    const last = game.history.pop();
+
+    games.value[gameIndex] = {
+      ...last,
+      history: game.history || [],
+    };
+
+    return true;
   }
 
   function getBalls(gameID, teamIndex) {
@@ -283,5 +331,7 @@ export const useGameStore = defineStore('game', () => {
     getStatsPerTeam,
     getStartDate,
     games,
+    canUndo,
+    undo,
   };
 });
