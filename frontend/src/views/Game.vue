@@ -132,10 +132,14 @@ const teamOne = computed(() => gameStore.getCurrentGame(id)?.teams[1] || null);
       </div>
       <div v-if="gameStore.getCurrentGame(id)?.teams?.length >= 2" class="mt-3">
         <div class="flex justify-between items-center">
-          <span class="text-slate-600">Team {{ teamZero.name }} ({{ teamZero.ballType }})</span>
-          <span class="text-slate-600 text-right"
-            >Team {{ teamOne.name }} ({{ teamOne.ballType }})</span
-          >
+          <span class="text-slate-600">
+            Team {{ teamZero.name }}
+            <template v-if="teamZero.ballType">({{ teamZero.ballType }})</template>
+          </span>
+          <span class="text-slate-600 text-right">
+            Team {{ teamOne.name }}
+            <template v-if="teamOne.ballType">({{ teamOne.ballType }})</template>
+          </span>
         </div>
         <div class="my-2 text-2xl font-bold flex justify-center">
           <span>{{ team1Points }}:{{ team2Points }}</span>
