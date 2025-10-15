@@ -129,9 +129,9 @@ const canUndo = computed(() => gameStore.canUndo(id));
       </div>
       <div v-if="gameStore.getCurrentGame(id)?.teams?.length >= 2" class="mt-3">
         <div class="flex justify-between items-center">
-          <span class="text-slate-600">Team {{ gameStore.getCurrentGame(id).teams[0].name }}</span>
+          <span class="text-slate-600">Team {{ gameStore.getCurrentGame(id).teams[0].name }} ({{ gameStore.getCurrentGame(id).teams[0].ballType }})</span>
           <span class="text-slate-600 text-right"
-            >Team {{ gameStore.getCurrentGame(id).teams[1].name }}</span
+            >Team {{ gameStore.getCurrentGame(id).teams[1].name }} <({{ gameStore.getCurrentGame(id).teams[1].ballType }})</span
           >
         </div>
         <div class="my-2 text-2xl font-bold flex justify-center">
