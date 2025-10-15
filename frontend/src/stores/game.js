@@ -31,7 +31,6 @@ export const useGameStore = defineStore('game', () => {
       })),
     };
     games.value.push(game);
-    pushHistory(game.id);
     await router.push({ name: 'games', params: { id: game.id } });
   }
 
@@ -152,8 +151,6 @@ export const useGameStore = defineStore('game', () => {
       return;
     }
 
-    pushHistory(gameID);
-
     const gameIndex = getGameIndex(gameID);
     games.value[gameIndex].teams[teamIndex].ballType = ballType;
 
@@ -163,8 +160,6 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function switchTurns(gameID, teamIndex) {
-    pushHistory(gameID);
-
     const gameIndex = getGameIndex(gameID);
     const game = getCurrentGame(gameID);
 

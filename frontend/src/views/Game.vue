@@ -204,8 +204,9 @@ const canUndo = computed(() => gameStore.canUndo(id));
         v-if="gameStore.getCurrentGame(id)?.isFinished"
         class="flex justify-center items-center absolute inset-0 z-10"
       >
-        <div class="shadow-2xl">
+        <div class="shadow-2xl flex flex-col gap-y-1">
           <Button label="Play Again" severity="success" @click="playAgain" />
+          <Button label="Undo" severity="secondary" :disabled="!canUndo" @click="undoLast" />
         </div>
       </div>
     </div>
