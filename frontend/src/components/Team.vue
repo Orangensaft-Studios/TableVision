@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, defineEmits, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import TeamInput from './TeamInput.vue';
 import UserInput from './UserInput.vue';
 import { VueDraggable } from 'vue-draggable-plus';
