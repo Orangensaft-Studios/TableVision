@@ -106,6 +106,9 @@ function undoLast() {
 }
 
 const canUndo = computed(() => gameStore.canUndo(id));
+
+const teamZero = computed(() => gameStore.getCurrentGame(id)?.teams[0] || null);
+const teamOne = computed(() => gameStore.getCurrentGame(id)?.teams[1] || null);
 </script>
 
 <template>
@@ -129,9 +132,9 @@ const canUndo = computed(() => gameStore.canUndo(id));
       </div>
       <div v-if="gameStore.getCurrentGame(id)?.teams?.length >= 2" class="mt-3">
         <div class="flex justify-between items-center">
-          <span class="text-slate-600">Team {{ gameStore.getCurrentGame(id).teams[0].name }}</span>
+          <span class="text-slate-600">Team {{ teamZero.name }} ({{ teamZero.ballType }})</span>
           <span class="text-slate-600 text-right"
-            >Team {{ gameStore.getCurrentGame(id).teams[1].name }}</span
+            >Team {{ teamOne.name }} ({{ teamOne.ballType }})</span
           >
         </div>
         <div class="my-2 text-2xl font-bold flex justify-center">
